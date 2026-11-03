@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "node scripts/dev-server.js",
     "build": "node scripts/build.mjs",
+    "test": "node --test 'tests/*.test.js'",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include='lib/**' 'tests/*.test.js'",
     "manual": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --disable-gpu --no-pdf-header-footer --virtual-time-budget=15000 --print-to-pdf=docs/CMU-Badminton-Guide.pdf docs/manual/manual.html"
   },
   "dependencies": {

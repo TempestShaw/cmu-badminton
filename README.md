@@ -89,7 +89,13 @@ phones ──poll /api/state (CDN-cached ~2 s)──▶ Vercel functions ──�
 ```bash
 npm install
 HOST_PIN=1234 npm run dev        # http://localhost:3000, data kept in memory
+npm test                         # the queue rules, in memory, in well under a second
 ```
+
+The tests in [`tests/`](tests) drive the real action runner against an
+in-memory store: line order and held courts, who may start early, moving and
+removing people (all or nothing), the one-spot limit, revisions, alerts and the
+wrong-PIN lockout. `npm run test:coverage` adds a coverage report.
 
 Without Redis settings the dev server keeps everything in memory, and without
 VAPID keys push notifications are simply off.

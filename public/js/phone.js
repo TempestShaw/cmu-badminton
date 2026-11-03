@@ -230,7 +230,7 @@ function alertLine() {
   const warnings = {
     'needs-home-screen': 'Alerts can\'t reach a locked phone from the browser. Add this to your Home Screen (steps below), or keep this page open.',
     denied: 'Notifications are blocked for this site, so a locked phone won\'t ring. Keep this page open, or allow notifications in settings.',
-    unsupported: 'This browser can\'t get alerts on a locked phone. Keep this page open and it will ring when it\'s your turn.',
+    unsupported: 'This browser can\'t get alerts on a locked phone. Keep this page open and watch for the full-screen alert.',
   };
   if (status === 'on') return h('div', { class: 'small muted', text: '🔔 Alerts on' });
   return warnings[status] ? h('div', { class: 'alert-off', text: warnings[status] }) : null;

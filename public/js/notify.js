@@ -103,12 +103,12 @@ export function pushPanel(status, { onEnable, onTest, busy, error, note }) {
       h('div', { text: 'On iPhone, alerts reach a locked phone only from the Home Screen app:' }),
       homeScreenSteps(),
       h('div', { class: 'notice', text: 'When it asks “Is that you?”, tap Yes, then turn on notifications there.' }),
-      h('div', { class: 'notice', text: 'Skipping this is fine: while this page is open, it still beeps and vibrates when it\'s your turn.' }),
+      h('div', { class: 'notice', text: 'Without it, keep this page open and watch for the full-screen alert: an iPhone web page can\'t vibrate.' }),
     );
   } else if (status === 'denied') {
     panel.append(h('div', { class: 'notice', text: 'Notifications are blocked. To get them, allow notifications for this site in your phone settings.' }));
   } else if (status === 'unsupported') {
-    panel.append(h('div', { class: 'notice', text: 'This browser can\'t receive push notifications. Keep this page open and it will beep and vibrate when it\'s your turn.' }));
+    panel.append(h('div', { class: 'notice', text: 'This browser can\'t receive push notifications. Keep this page open and watch for the full-screen alert when it\'s your turn.' }));
   } else {
     return null;
   }

@@ -43,10 +43,21 @@
         <div class="courts" id="courts"></div>
         <div class="error" id="error" role="alert"></div>
         <section>
-          <h2>In line</h2>
-          <div class="hint">Groups go in order. Short of players? Tap Start and grab someone. Drag ⠿ to move someone.</div>
+          <div class="row spread line-head">
+            <h2>In line</h2>
+            <button type="button" class="secondary" id="line-edit">Edit</button>
+          </div>
+          <div class="hint" id="line-hint">Groups go in order. Short of players? Tap Start and grab someone. Drag ⠿, or tap Edit to move people.</div>
           <ol class="queue" id="queue"></ol>
           <div id="queue-empty" class="empty-state" hidden>No one in line yet</div>
+          <div class="edit-bar" id="edit-bar" hidden>
+            <div class="edit-picked" id="edit-picked"></div>
+            <div class="row">
+              <button type="button" id="edit-move" disabled>Move to…</button>
+              <button type="button" class="ghost" id="edit-clear">Clear</button>
+            </div>
+            <div class="edit-note" id="edit-note" role="status"></div>
+          </div>
           <h2 class="spaced">Finished games</h2>
           <ol class="history" id="history"></ol>
           <div id="history-empty" class="empty-state">No games finished yet</div>

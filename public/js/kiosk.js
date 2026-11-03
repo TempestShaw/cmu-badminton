@@ -13,6 +13,7 @@ import { twoTapButton } from './two-tap.js';
 import { alertDialog, reportProblem } from './dialogs.js';
 import { setupVoice, announce } from './kiosk-voice.js';
 import { historyItems } from './history.js';
+import { createLineEditor } from './kiosk-edit.js';
 
 const $ = (id) => document.getElementById(id);
 const kiosk = { token: storage.get('kioskToken') || null, code: null, codeStamp: undefined };
@@ -99,6 +100,17 @@ function groupControls(state, group) {
 
 const walkupBoxes = nameBoxes($('walkup-names'));
 
+const editor = createLineEditor({
+  els: {
+    button: $('line-edit'), hint: $('line-hint'), bar: $('edit-bar'), picked: $('edit-picked'),
+    move: $('edit-move'), clear: $('edit-clear'), note: $('edit-note'),
+  },
+  getState: () => live.state,
+  send: act,
+  refresh: () => live.refresh(),
+  rerender,
+});
+
 function renderWalkup(state) {
   fillNameSuggestions($('roster-names'), state);
   const count = walkupBoxes.names().length;
@@ -124,8 +136,12 @@ function render(state) {
     }) : null),
   })));
   $('queue-empty').hidden = waiting(state).length > 0;
+  editor.sync(state);
   $('queue').replaceChildren(...queueItems(state, {
-    canDragPlayer: () => true,
+    // In Edit mode a tap picks people instead of dragging them.
+    canDragPlayer: () => !editor.editing,
+    onPlayerTap: editor.editing ? editor.toggle : undefined,
+    isPicked: editor.isPicked,
     groupExtra: (group) => groupControls(state, group),
   }));
   const history = historyItems(state);

@@ -15,13 +15,23 @@ function badgeFor(group, { isMine, isUp }) {
 function playerSlot(player, group, opts, looks) {
   const draggable = opts.canDragPlayer?.(player, group) ?? false;
   const style = lookStyle(looks.get(player.key));
+  const tap = opts.onPlayerTap ? () => opts.onPlayerTap(player, group) : null;
+  const picked = opts.isPicked?.(player, group) ?? false;
   const classes = ['slot'];
   if (player.key === opts.mineKey) classes.push('you');
   else if (opts.friendKeys?.has(player.key)) classes.push('friend');
   if (style) classes.push('styled');
+  if (tap) classes.push('pickable');
+  if (picked) classes.push('picked');
   return h('div', {
     class: classes.join(' '),
     style,
+    // Tappable on the court screen's Edit mode (see kiosk-edit.js).
+    role: tap ? 'button' : null,
+    tabindex: tap ? '0' : null,
+    'aria-pressed': tap ? String(picked) : null,
+    onclick: tap,
+    onkeydown: tap ? (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); tap(); } } : null,
     'data-drag': draggable ? 'player' : null,
     'data-player-key': player.key,
     'data-group-id': group.id,
@@ -34,7 +44,8 @@ function playerSlot(player, group, opts, looks) {
 /**
  * @param {object} state
  * @param {{mineKey?: string, friendKeys?: Set<string>, canDragPlayer?: Function, canDragGroups?: boolean,
- *          playerExtra?: Function, openSlot?: Function, groupExtra?: Function, isMine?: Function}} opts
+ *          playerExtra?: Function, openSlot?: Function, groupExtra?: Function, isMine?: Function,
+ *          onPlayerTap?: Function, isPicked?: Function}} opts
  * @returns {HTMLElement[]} list items, plus a "new group" drop zone shown while dragging a person
  */
 export function queueItems(state, opts = {}) {

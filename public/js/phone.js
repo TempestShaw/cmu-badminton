@@ -17,6 +17,7 @@ import { setupInstall } from './install.js';
 import { historyItems } from './history.js';
 import { setupPullToRefresh } from './pull-refresh.js';
 import { createLookPicker } from './look-picker.js';
+import { animateRedraw, animateCourts } from './motion.js';
 
 const $ = (id) => document.getElementById(id);
 // Don't flash "you're up" at someone who opens the page long after being called.
@@ -270,7 +271,7 @@ function renderQueue(state, member, groups) {
   // The line is far from the top of the page, so say what went wrong right here.
   const lineError = (message) => alertDialog('Couldn\'t do that', message);
   const openSpot = (label, body) => h('button', { class: 'slot open', type: 'button', onclick: () => act(body, lineError) }, label);
-  $('queue').replaceChildren(...queueItems(state, {
+  animateRedraw($('queue'), () => $('queue').replaceChildren(...queueItems(state, {
     mineKey: me.key,
     friendKeys: keys,
     isMine: (group) => groups.some((g) => g.id === group.id),
@@ -292,7 +293,7 @@ function renderQueue(state, member, groups) {
       rerender,
       onConfirm: () => act({ type: 'leave', groupId: group.id }, lineError),
     }) : null),
-  }));
+  })));
   $('drag-hint').hidden = !waiting(state).some((g) => g.players.some(canDrag));
 
   const extra = $('queue-extra');
@@ -379,12 +380,12 @@ function render(state) {
     renderTogether(state, groups, member);
     drawPushPanel(state);
   }
-  $('courts').replaceChildren(...state.courts.map((court) => courtCard(state, court, { mineKey: me.key })));
+  animateCourts($('courts'), () => $('courts').replaceChildren(...state.courts.map((court) => courtCard(state, court, { mineKey: me.key }))));
   renderQueue(state, member, groups);
   const history = historyItems(state, { highlightKeys: new Set([me.key, ...friendKeys()]) });
   $('history-panel').hidden = history.length === 0;
   $('history-count').textContent = String(history.length);
-  $('history').replaceChildren(...history);
+  animateRedraw($('history'), () => $('history').replaceChildren(...history));
   updateLook(state, member);
   maybeAlert(state, groups);
   keepAwake(groups.length > 0 || friends.length > 0);

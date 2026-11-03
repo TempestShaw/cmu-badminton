@@ -48,7 +48,7 @@ export function createLineEditor({ els, getState, send, refresh, rerender }) {
     const gone = picks.filter((p) => !stillThere(p));
     if (!gone.length) return;
     picks = picks.filter(stillThere);
-    note = `${listNames(gone)} moved or left just now, so ${gone.length === 1 ? 'is' : 'are'} no longer picked.`;
+    note = `${listNames(gone)} moved, so unpicked.`;
   }
 
   // Groups with room for everyone coming in, that none of them is already in.
@@ -81,7 +81,7 @@ export function createLineEditor({ els, getState, send, refresh, rerender }) {
     }, (message) => { note = message; });
     if (done) {
       picks = [];
-      note = `Moved ${listNames(moving)}.`;
+      note = '';
     } else {
       refresh();
     }
@@ -102,7 +102,7 @@ export function createLineEditor({ els, getState, send, refresh, rerender }) {
     }, (message) => { note = message; });
     if (done) {
       picks = [];
-      note = `Removed ${listNames(removing)} from the line.`;
+      note = '';
     } else {
       refresh();
     }

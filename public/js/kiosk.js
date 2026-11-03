@@ -14,6 +14,7 @@ import { alertDialog, reportProblem } from './dialogs.js';
 import { setupVoice, announce } from './kiosk-voice.js';
 import { historyItems } from './history.js';
 import { createLineEditor } from './kiosk-edit.js';
+import { animateRedraw, animateCourts } from './motion.js';
 
 const $ = (id) => document.getElementById(id);
 const kiosk = { token: storage.get('kioskToken') || null, code: null, codeStamp: undefined };
@@ -126,7 +127,7 @@ function render(state) {
     kiosk.codeStamp = stamp;
     refreshCode();
   }
-  $('courts').replaceChildren(...state.courts.map((court) => courtCard(state, court, {
+  animateCourts($('courts'), () => $('courts').replaceChildren(...state.courts.map((court) => courtCard(state, court, {
     extra: (group) => (group ? twoTapButton({
       id: `finish-${court.no}-${group.id}`,
       label: 'Done playing',
@@ -134,19 +135,19 @@ function render(state) {
       rerender,
       onConfirm: () => act({ type: 'finish', courtNo: court.no, groupId: group.id }),
     }) : null),
-  })));
+  }))));
   $('queue-empty').hidden = waiting(state).length > 0;
   editor.sync(state);
-  $('queue').replaceChildren(...queueItems(state, {
+  animateRedraw($('queue'), () => $('queue').replaceChildren(...queueItems(state, {
     // In Edit mode a tap picks people instead of dragging them.
     canDragPlayer: () => !editor.editing,
     onPlayerTap: editor.editing ? editor.toggle : undefined,
     isPicked: editor.isPicked,
     groupExtra: (group) => groupControls(state, group),
-  }));
+  })));
   const history = historyItems(state);
   $('history-empty').hidden = history.length > 0;
-  $('history').replaceChildren(...history);
+  animateRedraw($('history'), () => $('history').replaceChildren(...history));
   renderWalkup(state);
   announce(state);
 }

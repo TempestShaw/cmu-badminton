@@ -11,6 +11,7 @@ import { twoTapButton } from './two-tap.js';
 import { historyItems } from './history.js';
 import { promptDialog } from './dialogs.js';
 import { setupPullToRefresh } from './pull-refresh.js';
+import { animateRedraw, animateCourts } from './motion.js';
 
 const $ = (id) => document.getElementById(id);
 const PIN_KEY = 'bq.hostPin';
@@ -124,7 +125,7 @@ function groupControls(state, group, index, count) {
 function renderQueue(state) {
   const doubles = doubleKeys(state);
   $('queue-empty').hidden = waiting(state).length > 0;
-  $('queue').replaceChildren(...queueItems(state, {
+  animateRedraw($('queue'), () => $('queue').replaceChildren(...queueItems(state, {
     canDragPlayer: () => true,
     canDragGroups: true,
     playerExtra: (player, group) => [
@@ -135,7 +136,7 @@ function renderQueue(state) {
       }, '✕'),
     ],
     groupExtra: (group, index, count) => groupControls(state, group, index, count),
-  }));
+  })));
 }
 
 // Checked-in people: fix a typo, or take back a check-in.
@@ -225,7 +226,7 @@ function render(state) {
   renderToday(state);
   $('roster-panel').hidden = !state.session;
   if (state.session) renderRoster(state);
-  $('courts').replaceChildren(...state.courts.map((court) => courtCard(state, court, {
+  animateCourts($('courts'), () => $('courts').replaceChildren(...state.courts.map((court) => courtCard(state, court, {
     extra: (group) => (group ? h('div', { class: 'court-actions' },
       twoTapButton({
         id: `finish-${court.no}-${group.id}`, label: 'End game', confirmLabel: 'Tap again to end', className: 'secondary', rerender,
@@ -236,7 +237,7 @@ function render(state) {
         id: `back-${group.id}`, label: 'Back to line', confirmLabel: 'Tap again', className: 'secondary', rerender,
         onConfirm: () => act({ type: 'backToLine', groupId: group.id }),
       })) : null),
-  })));
+  }))));
   renderQueue(state);
   // Ended or removed by mistake? Undo puts them back on their court, or at the front of the line.
   const history = historyItems(state, {
@@ -246,7 +247,7 @@ function render(state) {
     })),
   });
   $('history-empty').hidden = history.length > 0;
-  $('history').replaceChildren(...history);
+  animateRedraw($('history'), () => $('history').replaceChildren(...history));
 }
 
 async function login(candidate) {

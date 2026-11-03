@@ -297,13 +297,13 @@ export function renderStatus(el, status) {
 export function courtCard(state, court, { mineKey, extra } = {}) {
   const group = court.groupId ? groupById(state, court.groupId) : null;
   if (!group) {
-    return h('div', { class: 'court empty' },
+    return h('div', { class: 'court empty', 'data-court': String(court.no), 'data-group-id': '' },
       h('div', { class: 'label', text: `Court ${court.no}` }),
       h('div', { class: 'names', text: 'Free' }),
       extra?.(null));
   }
   const mine = mineKey && group.players.some((p) => p.key === mineKey);
-  return h('div', { class: `court${mine ? ' mine' : ''}` },
+  return h('div', { class: `court${mine ? ' mine' : ''}`, 'data-court': String(court.no), 'data-group-id': group.id },
     h('div', { class: 'label', text: `Court ${court.no}` }),
     h('div', { class: 'group num', text: `Group ${group.no}` }),
     h('div', { class: 'names', text: group.players.map((p) => p.name).join(', ') }),

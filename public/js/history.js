@@ -18,7 +18,7 @@ export function historyItems(state, { highlightKeys = new Set(), extra } = {}) {
   return finishedGames(state).map((group) => {
     const removed = group.status === 'removed';
     const mine = group.players.some((p) => highlightKeys.has(p.key));
-    return h('li', { class: `history-item${mine ? ' mine' : ''}${removed ? ' removed' : ''}` },
+    return h('li', { class: `history-item${mine ? ' mine' : ''}${removed ? ' removed' : ''}`, 'data-group-id': group.id },
       h('div', { class: 'row spread' },
         h('span', { class: 'title num', text: `Group ${group.no}` }),
         h('span', { class: 'badge', text: removed ? 'Removed' : `Court ${group.court}` })),

@@ -7,6 +7,7 @@
 //   [data-drag="group"][data-group-id]                    a whole group, reordered
 //   [data-drop-group][data-group-id][data-open]           where a person can land
 //                                                         (data-group-id="new" = new group)
+import { markDropped } from './motion.js';
 
 const START_PX = 6;
 const EDGE_PX = 70;
@@ -140,9 +141,12 @@ export function enableDrag(root, { onPlayerDrop, onGroupDrop }) {
     };
     drag.onUp = () => finish(drag, (d) => {
       if (d.kind === 'player') {
+        markDropped('player', d.item.dataset.playerKey);
         onPlayerDrop?.({ playerKey: d.item.dataset.playerKey, fromGroupId: d.fromGroupId, groupId: d.target.groupId });
+      } else {
+        markDropped('group', d.item.dataset.groupId);
+        onGroupDrop?.({ groupId: d.item.dataset.groupId, beforeGroupId: d.target.beforeGroupId });
       }
-      else onGroupDrop?.({ groupId: d.item.dataset.groupId, beforeGroupId: d.target.beforeGroupId });
     });
     drag.onCancel = () => finish(drag, null);
     window.addEventListener('pointermove', drag.onMove);

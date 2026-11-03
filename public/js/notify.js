@@ -90,8 +90,8 @@ export function pushPanel(status, { onEnable, onTest, busy, error, note }) {
   const panel = h('section', { class: 'panel' });
   if (status === 'on') {
     panel.append(
-      h('div', { class: 'notice', text: '✓ Notifications are on. Your phone will alert you when your group is first in line and when it\'s your turn.' }),
-      h('div', { class: 'row' }, h('button', { class: 'secondary', type: 'button', onclick: onTest, disabled: busy }, busy ? 'Lock your phone now…' : 'Send a test in 10 seconds')),
+      h('div', { class: 'notice', text: '✓ Notifications are on.' }),
+      onTest ? h('div', { class: 'row' }, h('button', { class: 'secondary', type: 'button', onclick: onTest, disabled: busy }, busy ? 'Lock your phone now…' : 'Send a test in 10 seconds')) : null,
     );
   } else if (status === 'off') {
     panel.append(

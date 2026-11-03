@@ -150,10 +150,11 @@ function queueStatus(state, group, { self = true } = {}) {
   if (group.status === 'playing') return `On Court ${group.court}`;
   const ahead = waiting(state).findIndex((g) => g.id === group.id);
   const missing = GROUP_SIZE - group.players.length;
-  if (missing > 0) return `${missing} more needed to play`;
-  if (ahead === 0) return self ? 'You\'re first in line: you\'re on when a court frees up' : 'First in line';
-  const groups = `${ahead} ${ahead === 1 ? 'group' : 'groups'} ahead`;
-  return self ? `${groups} of you` : groups;
+  const place = ahead === 0
+    ? (self ? 'You\'re first in line' : 'First in line')
+    : `${ahead} ${ahead === 1 ? 'group' : 'groups'} ahead`;
+  if (missing > 0) return `${place} · ${missing} more needed`;
+  return ahead === 0 && self ? `${place}: you're on when a court frees up` : place;
 }
 
 function playingCard(group) {
@@ -231,6 +232,7 @@ function alertLine() {
     denied: 'Notifications are blocked for this site, so a locked phone won\'t ring. Keep this page open, or allow notifications in settings.',
     unsupported: 'This browser can\'t get alerts on a locked phone. Keep this page open and it will ring when it\'s your turn.',
   };
+  if (status === 'on') return h('div', { class: 'small muted', text: '🔔 Alerts on' });
   return warnings[status] ? h('div', { class: 'alert-off', text: warnings[status] }) : null;
 }
 
@@ -311,7 +313,7 @@ async function turnOnAlerts() {
   renderPush();
   try {
     await enablePush(ui.vapidKey, me.id);
-    ui.push = { status: 'on', busy: false, error: '', note: 'Alerts are on. Try “Send a test in 10 seconds” and lock your phone.' };
+    ui.push = { status: 'on', busy: false, error: '', note: '', justTurnedOn: true };
   } catch (error) {
     ui.push = { status: await pushStatus(ui.vapidKey), busy: false, error: error.message, note: '' };
   }
@@ -326,18 +328,22 @@ function renderPush() {
 
 function drawPushPanel(state) {
   const inLine = state ? myGroups(state).some((g) => g.status === 'waiting') : false;
-  // While someone is in line, the card already asks or warns; keep the panel for steps and tests.
-  const showPanel = ui.push.status && !(inLine && ['off', 'denied', 'unsupported'].includes(ui.push.status));
+  // While someone is in line, the card already asks or warns; keep the panel for steps.
+  // Once alerts are on, the panel (and its test button) shows only right after
+  // turning them on; after that the card's "Alerts on" line is enough.
+  const settled = ui.push.status === 'on' && !ui.push.justTurnedOn;
+  const showPanel = ui.push.status && !settled && !(inLine && ['off', 'denied', 'unsupported'].includes(ui.push.status));
   const panel = showPanel && pushPanel(ui.push.status, {
     busy: ui.push.busy,
     error: ui.push.error,
     note: ui.push.note,
-    onTest: async () => {
+    // One test, then the button goes; the result note stays until the page reloads.
+    onTest: ui.push.tested ? null : async () => {
       ui.push = { ...ui.push, busy: true, error: '', note: 'Lock your phone now. The test arrives in about 10 seconds.' };
       renderPush();
       try {
         await sendTestPush();
-        ui.push = { ...ui.push, busy: false, note: 'Sent. Did it show on your lock screen? If not, check this site\'s notification settings and Focus / Do Not Disturb.' };
+        ui.push = { ...ui.push, busy: false, tested: true, note: 'Sent. Did it show on your lock screen? If not, check this site\'s notification settings and Focus / Do Not Disturb.' };
       } catch (error) {
         ui.push = { ...ui.push, busy: false, error: error.message };
       }

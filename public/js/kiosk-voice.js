@@ -1,4 +1,5 @@
-// Spoken announcements on the court screen when a group is called.
+// Optional read-aloud on the court screen: when a group is called, this
+// computer says "Group 5, please go to court 2" and the names. Not push notifications.
 let voiceOn = false;
 let announced = null;
 
@@ -13,8 +14,9 @@ function speak(text) {
 export function setupVoice(button) {
   button.addEventListener('click', () => {
     voiceOn = !voiceOn;
-    button.textContent = voiceOn ? 'Announcements: on' : 'Turn on announcements';
-    if (voiceOn) speak('Announcements on');
+    button.textContent = voiceOn ? '🔊 Reading names aloud' : '🔊 Read names aloud';
+    button.classList.toggle('confirm', voiceOn);
+    if (voiceOn) speak('I will read out each group when it is called');
     else speechSynthesis?.cancel();
   });
 }

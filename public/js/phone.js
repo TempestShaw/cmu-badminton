@@ -60,7 +60,7 @@ function showError(message) {
 }
 
 function explain(error, onOther) {
-  if (error.code === 'signup_limit') alertDialog('Already signed up twice', error.message);
+  if (error.code === 'signup_limit') alertDialog('Already signed up', error.message);
   else onOther(error.message);
 }
 
@@ -204,7 +204,7 @@ function startNote(state, group) {
 function waitingCard(state, group, isSecond) {
   const { court, note } = startNote(state, group);
   return h('div', { class: 'me' },
-    isSecond ? h('div', { class: 'small muted', text: 'Your second spot' }) : null,
+    isSecond ? h('div', { class: 'small muted', text: 'Also signed up' }) : null,
     h('div', { class: 'headline num', text: `Group ${group.no}` }),
     h('div', { class: 'sub', text: queueStatus(state, group) }),
     h('div', { class: 'small muted', text: matesLine(group) }),

@@ -45,7 +45,7 @@ async function act(body, onError = setError) {
     return result ?? {};
   } catch (error) {
     if (error.code === 'not_kiosk') lock('This screen got locked (maybe the host password changed). Unlock it again.');
-    else if (error.code === 'signup_limit') alertDialog('Already signed up twice', error.message);
+    else if (error.code === 'signup_limit') alertDialog('Already signed up', error.message);
     else onError(error.message);
     return null;
   }

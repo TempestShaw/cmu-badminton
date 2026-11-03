@@ -49,6 +49,36 @@ export function pickDialog({ title, body, options }) {
   });
 }
 
+/**
+ * Asks for one line of text, e.g. a corrected name.
+ * @returns {Promise<string|null>} the text, or null if cancelled
+ */
+export function promptDialog({ title, label, value = '', confirmLabel = 'Save', maxlength = 20 }) {
+  return new Promise((resolve) => {
+    let answer = null;
+    const input = h('input', { maxlength: String(maxlength), autocomplete: 'off' });
+    input.value = value;
+    const form = h('form', { class: 'stack', method: 'dialog' },
+      h('label', { text: label }), input,
+      h('div', { class: 'row actions' },
+        h('button', { type: 'button', class: 'secondary', onclick: () => dialog.close() }, 'Cancel'),
+        h('button', { type: 'submit' }, confirmLabel)));
+    const dialog = h('dialog', { class: 'sheet' }, h('h2', { text: title }), form);
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      answer = input.value.trim() || null;
+      dialog.close();
+    });
+    dialog.addEventListener('close', () => {
+      dialog.remove();
+      resolve(answer);
+    });
+    document.body.append(dialog);
+    dialog.showModal();
+    input.select();
+  });
+}
+
 export const alertDialog = (title, message) => openDialog({ title, body: [message], actions: [{ label: 'OK', value: 'ok' }] });
 
 /** Opens the problem report form. `context` is attached so the host can see what state things were in. */

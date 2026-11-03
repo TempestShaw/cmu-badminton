@@ -25,8 +25,9 @@ the courts, the line and today's sign-up code.
   Works on Android and on iPhone from the Home Screen app (iOS 16.4+).
 - **Sign up friends** in one go, move people between groups by tapping or
   dragging, and see the day's finished games.
-- **Fair-play limits:** at most two spots per person, one phone can hold spots
-  for at most three friends, per-network rate limits.
+- **Fair-play limits:** one spot per person (the host page flags anyone
+  signed up twice), one phone can hold spots for at most three friends,
+  per-network rate limits.
 - **Three screens:** the phone page (`/`), the court-side screen (`/kiosk`,
   unlocked once with the host password) and the host page (`/host`).
 

@@ -152,7 +152,7 @@ button.alert-me { width: 100%; background: var(--court); color: #fff; }
 
 /* ------------------------------------------------------------ friends */
 
-.together summary, .history-panel summary {
+.together summary, .history-panel summary, .roster-panel summary {
   cursor: pointer; font-weight: 700; min-height: 28px; display: flex; align-items: center; gap: 8px;
 }
 .together summary { list-style: none; }
@@ -200,6 +200,8 @@ button.alert-me { width: 100%; background: var(--court); color: #fff; }
   background: var(--court-ink); color: var(--court); box-shadow: none;
 }
 .court button.confirm { background: var(--accent); color: var(--accent-ink); }
+.court-actions { margin-top: auto; display: grid; gap: 6px; }
+.court-actions button.secondary { margin-top: 0; }
 
 /* ------------------------------------------------------------ the line */
 
@@ -210,6 +212,8 @@ button.alert-me { width: 100%; background: var(--court); color: #fff; }
 .qhead .title { font-family: var(--font-display); font-size: 22px; font-weight: 700; flex: 1; min-width: 0; }
 .badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--bg); color: var(--muted); white-space: nowrap; }
 .badge.next { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.badge.double { background: var(--danger); color: #fff; font-weight: 700; }
+button.link.alert-off { text-align: left; justify-self: start; }
 .slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .slot {
   border-radius: 8px; padding: 8px 10px; background: var(--bg); min-height: 40px;

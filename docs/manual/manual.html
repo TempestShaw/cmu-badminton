@@ -57,6 +57,10 @@
   .shot.crop.bottom img { object-position: bottom; }
   .shot.crop.short img { max-height: 3.3in; }
   .shot figcaption { font-size: 8pt; color: var(--iron); margin-top: 4px; text-align: center; }
+  table.fixes { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 4px 0 6px; }
+  table.fixes th { text-align: left; font: 700 10pt var(--display); letter-spacing: .06em; text-transform: uppercase; color: #fff; background: var(--ink); padding: 5px 8px; }
+  table.fixes td { padding: 6px 8px; border-bottom: 1px solid var(--steel); vertical-align: top; }
+  table.fixes td:first-child { width: 38%; color: var(--iron); }
   .wide img { width: 100%; border-radius: 8px; border: 1px solid #cfcfcf; }
 
   /* Cover */
@@ -111,7 +115,7 @@
       <ol>
         <li><span>Before the session</span><span>8</span></li>
         <li><span>Running the line</span><span>9</span></li>
-        <li><span>Ending the day, reports, help</span><span>10</span></li>
+        <li><span>Fixing mistakes, ending the day</span><span>10</span></li>
       </ol>
     </div>
     <div class="contact">victorkw@andrew.cmu.edu · github.com/TempestShaw</div>
@@ -207,7 +211,7 @@
       </ul>
       <h3>Fair-play limits</h3>
       <ul>
-        <li>Everyone can hold <b>at most two spots</b> at once (playing + one in line). A third sign-up is refused.</li>
+        <li><b>One spot per person.</b> Sign up for your next game after this one ends.</li>
         <li>One phone can hold spots for up to <b>three friends</b> who haven't checked in themselves.</li>
       </ul>
     </div>
@@ -264,7 +268,7 @@
       <h3>1. Start today's session</h3>
       <p>On your phone, open <b>cmubmt.vercel.app/host</b>, enter the host password and tap <span class="btn">Start today's session</span>. Today's code appears in big red letters.</p>
       <h3>2. Set up the court-side screen</h3>
-      <p>On the computer by the courts, open <b>cmubmt.vercel.app/kiosk</b> and unlock it once with the host password. It then shows today's code, a QR code for people to scan, the courts and the line. Tap <b>Turn on announcements</b> to have it read out who's up.</p>
+      <p>On the computer by the courts, open <b>cmubmt.vercel.app/kiosk</b> and unlock it once with the host password. It then shows today's code, a QR code for people to scan, the courts and the line. Optional: tap <b>🔊 Read names aloud</b> and the computer reads out each group as it's called (“Group 5, please go to court 2”). This is spoken by the computer; it's separate from phone alerts.</p>
       <h3>3. Tell people</h3>
       <p>“Scan the QR code on the screen to sign up. iPhone users, add it to your Home Screen first so it can buzz you.”</p>
       <h3>Today panel</h3>
@@ -272,6 +276,7 @@
         <li><span class="btn light">New code</span>: if the code was shared outside the hall. Everyone already checked in stays.</li>
         <li><span class="btn light">Start a new day</span>: clears everything and makes a new code.</li>
         <li><span class="btn" style="background:#941120">End today</span>: see page 10.</li>
+        <li><b>⚠ Signed up twice</b> appears here if anyone holds two spots (see page 10).</li>
       </ul>
       <div class="tip">Buttons that are hard to undo need a <b>second tap</b> within four seconds.</div>
     </div>
@@ -289,7 +294,7 @@
   <div class="split" style="margin-top:12px">
     <div>
       <h3>Courts</h3>
-      <p><b>End game</b> under a court frees it; the next full group is called automatically.</p>
+      <p><b>End game</b> under a court frees it; the next full group is called automatically. <b>Back to line</b> undoes starting the wrong group: the court frees up and that group goes back to the front of the line.</p>
       <h3>The line</h3>
       <ul>
         <li><b>Drag ⠿ on a person</b> to move them; <b>drag ⠿ on a group's title</b> (or use ↑ / ↓) to reorder groups.</li>
@@ -303,32 +308,31 @@
   <div class="foot"><span>cmubmt.vercel.app/host</span><span>Host · 9</span></div>
 </section>
 
-<!-- ================================================================ 10 · host: ending and help -->
+<!-- ================================================================ 10 · host: fixing mistakes, ending the day -->
 <section class="page host-page">
   <div class="band host">CMU Recreational Badminton<span class="who">For the host</span></div>
-  <h2>9 · Ending the day, reports, help</h2>
-  <div class="split">
-    <div>
-      <h3>End the day</h3>
-      <p>Tap <span class="btn" style="background:#941120">End today</span> twice. Courts, line and check-ins clear and phones show “No session is running right now”, so nobody sees yesterday's line tomorrow. Forgot? A session ends on its own <b>18 hours</b> after it started.</p>
-      <h3>Bug reports</h3>
-      <p>Anything sent with <b>Report a problem</b> shows up under <b>Bug reports</b>, with the sender's name, page and phone type. Delete them once handled.</p>
-      <h3>Quick fixes</h3>
-      <ul>
-        <li><b>Someone isn't getting alerts</b>: iPhone must use the Home Screen app; notifications must be allowed; ask them to tap “Send a test in 10 seconds”.</li>
-        <li><b>Court screen says it's locked</b>: unlock it again with the host password (needed after the password changes).</li>
-        <li><b>A group is on a court but already left</b>: tap End game / Done playing for that court.</li>
-        <li><b>Wrong person took a name</b>: remove them with ✕ and have the right person check in again.</li>
-        <li><b>Someone can't sign up a third time</b>: by design (two spots max). It frees up once one of their games ends.</li>
-      </ul>
-      <h3>Good to know</h3>
-      <ul>
-        <li>Runs on free tiers (Vercel + Upstash); comfortable for about ten sessions a month.</li>
-        <li>Built and maintained by Victor: <b>victorkw@andrew.cmu.edu</b> · <b>github.com/TempestShaw</b>.</li>
-      </ul>
-    </div>
-    <figure class="shot crop bottom"><img src="img/15-host-reports.jpg" alt=""><figcaption>Bug reports on the host page</figcaption></figure>
-  </div>
+  <h2>9 · Fixing mistakes, ending the day</h2>
+  <p class="lede">Every slip at the courts can be put right from the host page.</p>
+  <h3>Fixing mistakes</h3>
+  <table class="fixes">
+    <tr><th>What happened</th><th>What to tap</th></tr>
+    <tr><td>Someone pressed <b>End game</b> / <b>Done playing</b> on a game still going</td><td><b>Undo end</b> on that game in <b>Finished games</b>: it goes back on its court (or to the front of the line if the court was taken). No new alerts go out.</td></tr>
+    <tr><td>A group was removed by mistake</td><td><b>Bring back</b> in <b>Finished games</b>: back to the front of the line.</td></tr>
+    <tr><td>The wrong group was started</td><td><b>Back to line</b> under that court.</td></tr>
+    <tr><td>A name has a typo</td><td><b>Checked in</b> → <b>Rename</b>. It changes everywhere.</td></tr>
+    <tr><td>Someone used another person's name, or checked in twice</td><td><b>Checked in</b> → <b>Remove</b>: they leave the line and the name is free for the right person.</td></tr>
+    <tr><td>Someone holds two spots (<b>⚠ Signed up twice</b>, <b>2×</b> in the line)</td><td>It's one spot per person. If someone ends up with two (say a friend wrote them into the next game while they were still playing), decide whether it's fair and remove the extra spot with <b>✕</b> if not.</td></tr>
+    <tr><td>You tapped <b>Start a new day</b> or <b>End today</b> by mistake</td><td><b>Undo: bring back the cleared day</b> in the Today panel, within 30 minutes.</td></tr>
+  </table>
+  <h3>End the day</h3>
+  <p>Tap <span class="btn" style="background:#941120">End today</span> twice. Courts, line and check-ins clear and phones show “No session is running right now”, so nobody sees yesterday's line tomorrow. Forgot? A session ends on its own <b>18 hours</b> after it started.</p>
+  <h3>Bug reports and other help</h3>
+  <ul>
+    <li><b>Report a problem</b> messages show up under <b>Bug reports</b> with the sender's name, page and phone type.</li>
+    <li><b>No alerts on someone's phone</b>: iPhone must use the Home Screen app and allow notifications; “Send a test in 10 seconds” checks it.</li>
+    <li><b>Court screen says it's locked</b>: unlock it again with the host password (needed after the password changes).</li>
+    <li>Runs on free tiers (Vercel + Upstash), comfortable for about ten sessions a month. Built and maintained by Victor: <b>victorkw@andrew.cmu.edu</b> · <b>github.com/TempestShaw</b>.</li>
+  </ul>
   <div class="foot"><span>victorkw@andrew.cmu.edu · github.com/TempestShaw</span><span>Host · 10</span></div>
 </section>
 

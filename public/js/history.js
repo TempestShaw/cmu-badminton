@@ -10,8 +10,11 @@ export function finishedGames(state) {
     .sort((a, b) => (b.finishedAt ?? 0) - (a.finishedAt ?? 0));
 }
 
-/** @param {{highlightKeys?: Set<string>}} opts  players to highlight, e.g. this phone and its friends */
-export function historyItems(state, { highlightKeys = new Set() } = {}) {
+/**
+ * @param {{highlightKeys?: Set<string>, extra?: (group: object) => Node|null}} opts
+ *   highlightKeys: players to highlight (this phone and its friends); extra: e.g. the host's Undo button
+ */
+export function historyItems(state, { highlightKeys = new Set(), extra } = {}) {
   return finishedGames(state).map((group) => {
     const removed = group.status === 'removed';
     const mine = group.players.some((p) => highlightKeys.has(p.key));
@@ -20,6 +23,7 @@ export function historyItems(state, { highlightKeys = new Set() } = {}) {
         h('span', { class: 'title num', text: `Group ${group.no}` }),
         h('span', { class: 'badge', text: removed ? 'Removed' : `Court ${group.court}` })),
       h('div', { class: 'names', text: group.players.map((p) => p.name).join(', ') || 'No one' }),
-      h('div', { class: 'small muted', text: `${removed ? 'Removed' : 'Ended'} ${timeOf(group.finishedAt)}` }));
+      h('div', { class: 'small muted', text: `${removed ? 'Removed' : 'Ended'} ${timeOf(group.finishedAt)}` }),
+      extra?.(group));
   });
 }

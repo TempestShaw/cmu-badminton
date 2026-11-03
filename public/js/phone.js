@@ -273,10 +273,12 @@ function renderQueue(state, member, groups) {
   // The line is far from the top of the page, so say what went wrong right here.
   const lineError = (message) => alertDialog('Couldn\'t do that', message);
   const openSpot = (label, body) => h('button', { class: 'slot open', type: 'button', onclick: () => act(body, lineError) }, label);
+  const isMine = (group) => groups.some((g) => g.id === group.id);
   animateRedraw($('queue'), [...queueItems(state, {
     mineKey: me.key,
     friendKeys: keys,
-    isMine: (group) => groups.some((g) => g.id === group.id),
+    isMine,
+    foldFull: (group) => group.players.length >= GROUP_SIZE && !isMine(group) && !group.players.some((p) => keys.has(p.key)),
     canDragPlayer: canDrag,
     openSlot: (group) => {
       if (canJoin) return openSpot('+ Join', { type: 'join', groupId: group.id });
@@ -301,9 +303,15 @@ function renderQueue(state, member, groups) {
   const extra = $('queue-extra');
   extra.replaceChildren();
   if (!waiting(state).length) extra.append(h('div', { class: 'empty-state', text: 'No one in line yet.' }));
-  if (canJoin) {
-    extra.append(h('button', { class: 'secondary new-group', type: 'button', onclick: () => act({ type: 'join', groupId: 'new' }) }, '+ Start a new group'));
-  }
+}
+
+// The join buttons say exactly where you'd go: the first group with room, by name.
+function renderJoinPanel(state) {
+  const target = waiting(state).find((g) => g.players.length < GROUP_SIZE);
+  const open = target ? GROUP_SIZE - target.players.length : 0;
+  $('quick-join').hidden = !target;
+  if (target) $('quick-join').textContent = `Join Group ${target.no} · ${open} ${open === 1 ? 'spot' : 'spots'} left`;
+  $('new-group').className = target ? 'secondary' : '';
 }
 
 // ---------------------------------------------------------------- alerts
@@ -383,6 +391,7 @@ function render(state) {
     renderMe(state, groups);
     renderFriends(state);
     $('join-panel').hidden = groups.length > 0;
+    renderJoinPanel(state);
     renderTogether(state, groups, member);
     drawPushPanel(state);
   }
@@ -404,6 +413,7 @@ $('checkin').addEventListener('submit', (event) => {
   checkIn();
 });
 $('quick-join').addEventListener('click', () => act({ type: 'join', groupId: 'auto' }));
+$('new-group').addEventListener('click', () => act({ type: 'join', groupId: 'new' }));
 $('not-me').addEventListener('click', switchPerson);
 $('home-first-steps').replaceChildren(homeScreenSteps());
 $('skip-home').addEventListener('click', () => {

@@ -11,7 +11,10 @@ export const GET = handle(async () => {
   const started = performance.now();
   const { state } = await loadState(getStore());
   return ok(toPublic(state), {
-    'Cache-Control': 'public, max-age=0, s-maxage=1, stale-while-revalidate=1',
+    // The CDN keeps one copy for a second; browsers never reuse an old copy,
+    // so a page that just opened can't start from a stale state.
+    'Cache-Control': 'no-store',
+    'Vercel-CDN-Cache-Control': 'max-age=1, stale-while-revalidate=1',
     'Server-Timing': `redis;dur=${(performance.now() - started).toFixed(1)}`,
   });
 });

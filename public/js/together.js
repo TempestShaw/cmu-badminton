@@ -23,12 +23,19 @@ export function groupOptions(state, size) {
   ];
 }
 
-/** Refreshes a <select>'s options, leaving it alone while someone has it open. */
-export function fillSelect(select, options) {
+/**
+ * Refreshes a <select>'s options, leaving it alone while someone has it open.
+ * Until the person picks something themselves it shows `preferred`.
+ */
+export function fillSelect(select, options, preferred = 'auto') {
   if (document.activeElement === select) return;
-  const previous = select.value || 'auto';
+  if (!select.dataset.watched) {
+    select.dataset.watched = '1';
+    select.addEventListener('change', () => { select.dataset.picked = '1'; });
+  }
+  const wanted = select.dataset.picked ? select.value : preferred;
   select.replaceChildren(...options.map((o) => h('option', { value: o.value, text: o.text })));
-  select.value = options.some((o) => o.value === previous) ? previous : 'auto';
+  select.value = options.some((o) => o.value === wanted) ? wanted : 'auto';
 }
 
 export const peopleLabel = (count) => (count === 1 ? '1 person' : `${count} people`);

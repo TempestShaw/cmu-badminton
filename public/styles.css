@@ -237,6 +237,13 @@ button.slot.open:hover { color: var(--court); border-color: var(--court); }
 .group-actions { gap: 6px; }
 .group-actions button { padding: 8px 12px; font-size: 14px; }
 
+/* Phone: join buttons stacked at the top; full groups folded into one line. */
+.join-panel { gap: 8px; }
+.qgroup.folded { padding: 10px 14px; }
+.qgroup.folded .qhead { align-items: center; gap: 10px; }
+.qgroup.folded .title { flex: none; font-size: 18px; }
+.folded-names { flex: 1; min-width: 0; font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 /* ------------------------------------------------------------ drag and drop (see js/dnd.js) */
 
 .grip {

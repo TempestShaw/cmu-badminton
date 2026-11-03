@@ -45,7 +45,7 @@ function playerSlot(player, group, opts, looks) {
  * @param {object} state
  * @param {{mineKey?: string, friendKeys?: Set<string>, canDragPlayer?: Function, canDragGroups?: boolean,
  *          playerExtra?: Function, openSlot?: Function, groupExtra?: Function, isMine?: Function,
- *          onPlayerTap?: Function, isPicked?: Function}} opts
+ *          onPlayerTap?: Function, isPicked?: Function, foldFull?: Function}} opts
  * @returns {HTMLElement[]} list items, plus a "new group" drop zone shown while dragging a person
  */
 export function queueItems(state, opts = {}) {
@@ -57,6 +57,16 @@ export function queueItems(state, opts = {}) {
   const looks = new Map((state.roster ?? []).map((m) => [m.key, m.look]));
   const items = queue.map((group, index) => {
     const isMine = opts.isMine?.(group) ?? false;
+    // Phones fold full groups into one line, so groups with room are near the top.
+    if (opts.foldFull?.(group)) {
+      return h('li', {
+        class: 'qgroup folded', 'data-drop-group': '', 'data-group-id': group.id, 'data-open': '0',
+      },
+      h('div', { class: 'qhead' },
+        h('span', { class: 'title num', text: `Group ${group.no}` }),
+        h('span', { class: 'folded-names', text: group.players.map((p) => p.name).join(', ') }),
+        badgeFor(group, { isMine, isUp: up.has(group.id) })));
+    }
     const slots = Array.from({ length: GROUP_SIZE }, (_, i) => (group.players[i]
       ? playerSlot(group.players[i], group, opts, looks)
       : opts.openSlot?.(group) ?? h('div', { class: 'slot open', text: 'Open' })));

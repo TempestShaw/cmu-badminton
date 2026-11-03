@@ -3,6 +3,7 @@
 import {
   partyError, groupOptions, fillSelect, peopleLabel, nameBoxes, fillNameSuggestions,
 } from './together.js';
+import { GROUP_SIZE } from './core.js';
 
 const $ = (id) => document.getElementById(id);
 let ctx = null;
@@ -14,10 +15,20 @@ function partyFromForm(state) {
   return { includeMe, names, count: names.length + (includeMe ? 1 : 0) };
 }
 
+// Already waiting in a group with room for them? Friends go there by default, so
+// you don't end up apart from the people you signed up.
 function refreshCount(state) {
   const { count } = partyFromForm(state);
   $('together-submit').textContent = count ? `Sign up ${peopleLabel(count)}` : 'Sign up';
-  fillSelect($('together-group'), groupOptions(state, count));
+  const options = groupOptions(state, count);
+  const mine = ctx.myGroups(state).find((g) => g.status === 'waiting');
+  const room = mine ? GROUP_SIZE - mine.players.length : 0;
+  if (!mine || room < Math.max(count, 1)) {
+    fillSelect($('together-group'), options);
+    return;
+  }
+  const yours = { value: mine.id, text: `Your group: Group ${mine.no} (${room} open)` };
+  fillSelect($('together-group'), [yours, ...options.filter((o) => o.value !== mine.id)], mine.id);
 }
 
 // Up to 4 per group: three friend boxes plus "me", or four when I'm not included.
@@ -51,6 +62,7 @@ async function submit(event) {
   try {
     await ctx.submit({ type: 'joinTogether', includeMe, names, groupId: $('together-group').value });
     boxes.clear();
+    delete $('together-group').dataset.picked;
     $('together').open = false;
   } catch (e) {
     ctx.explain(e, (message) => { error.textContent = message; });

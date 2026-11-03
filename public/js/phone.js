@@ -1,7 +1,7 @@
 // The phone page: check in with today's code, join a group, sign up friends,
 // see where you are in line, and get an alert when it's your turn.
 import {
-  api, h, createLive, storage, playerId, setPlayerId, keyOf, isActive, waiting, courtCard, renderStatus, GROUP_SIZE,
+  api, h, createLive, storage, playerId, setPlayerId, keyOf, isActive, waiting, startable, courtCard, renderStatus, GROUP_SIZE,
 } from './core.js';
 import {
   registerWorker, pushStatus, enablePush, linkSubscription, sendTestPush, pushPanel, unlockAudio, showTurnAlert, keepAwake,
@@ -185,22 +185,13 @@ async function moveToGroup(state, player, fromGroup, { self }) {
   if (choice) act({ type: 'movePlayer', playerKey: player.key, fromGroupId: fromGroup.id, groupId: choice });
 }
 
-// Mirrors the server: whoever is first in line may start early.
-function nextStartable(state) {
-  return waiting(state).find((g) => g.players.length > 0) ?? null;
-}
-
+// A short group holding a free court may start it; full groups go on by
+// themselves, and anyone further back just waits their turn.
 function startNote(state, group) {
   const free = freeCourt(state);
   if (!free || group.players.length >= GROUP_SIZE) return { court: null, note: null };
-  const next = nextStartable(state);
-  if (next?.id === group.id) {
-    return { court: free, note: 'A court is free and it\'s your turn. Short of players? Grab someone and start.' };
-  }
-  return {
-    court: null,
-    note: next ? `A court is free, but Group ${next.no} is first in line, so they start first.` : null,
-  };
+  if (!startable(state).some((g) => g.id === group.id)) return { court: null, note: null };
+  return { court: free, note: 'A court is free and it\'s your turn. Short of players? Grab someone and start.' };
 }
 
 function waitingCard(state, group, isSecond) {

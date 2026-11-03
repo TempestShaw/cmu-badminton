@@ -1,14 +1,14 @@
 // The "In line" list, shared by every page. Each page decides who may be
 // dragged and adds its own controls; the markup matches what dnd.js expects.
-import { h, waiting, GROUP_SIZE } from './core.js';
+import { h, waiting, startable, GROUP_SIZE } from './core.js';
 import { lookStyle } from './looks.js';
 
 const grip = (label) => h('span', { class: 'grip', title: label, 'aria-label': label, role: 'img' }, '⠿');
 
-function badgeFor(group, { isMine, isFirst }) {
+function badgeFor(group, { isMine, isUp }) {
   const missing = GROUP_SIZE - group.players.length;
   if (isMine) return h('span', { class: 'badge next', text: 'Your group' });
-  if (isFirst) return h('span', { class: 'badge next', text: 'Up next' });
+  if (isUp) return h('span', { class: 'badge next', text: 'Up next' });
   return h('span', { class: 'badge', text: missing > 0 ? `${missing} open` : 'Full' });
 }
 
@@ -40,6 +40,8 @@ function playerSlot(player, group, opts, looks) {
 export function queueItems(state, opts = {}) {
   const queue = waiting(state);
   const [first] = queue;
+  // First in line, plus any short group holding a free court of its own.
+  const up = new Set([first?.id, ...startable(state).map((g) => g.id)]);
   // Each player's chosen bubble style, from today's roster.
   const looks = new Map((state.roster ?? []).map((m) => [m.key, m.look]));
   const items = queue.map((group, index) => {
@@ -57,7 +59,7 @@ export function queueItems(state, opts = {}) {
     h('div', { class: 'qhead' },
       opts.canDragGroups ? grip(`Drag Group ${group.no} to reorder`) : null,
       h('span', { class: 'title num', text: `Group ${group.no}` }),
-      badgeFor(group, { isMine, isFirst: group === first })),
+      badgeFor(group, { isMine, isUp: up.has(group.id) })),
     h('div', { class: 'slots' }, slots),
     opts.groupExtra?.(group, index, queue.length));
   });

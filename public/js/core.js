@@ -197,6 +197,9 @@ export async function keyOf(id) {
 
 export const isActive = (g) => g.status === 'waiting' || g.status === 'playing';
 export const waiting = (state) => state.groups.filter((g) => g.status === 'waiting');
+/** Mirrors the server: the first groups in line, one per free court, may start early. */
+export const startable = (state) => waiting(state).filter((g) => g.players.length > 0)
+  .slice(0, state.courts.filter((c) => !c.groupId).length);
 export const groupById = (state, id) => state.groups.find((g) => g.id === id) ?? null;
 export const GROUP_SIZE = 4;
 

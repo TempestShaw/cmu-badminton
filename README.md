@@ -18,10 +18,11 @@ the courts, the line and today's sign-up code.
 
 - **Check-in with a daily code** shown only on the court-side screen, so people
   sign up when they're actually at the courts. Names are unique for the day.
-- **Groups of four, strictly in line order.** A full group goes on the next free
-  court automatically; a short group that's first in line can start anyway.
+- **Groups of four, in line order.** A full group goes on the next free court
+  automatically. A short group at the front keeps one free court for itself and
+  can start anyway; full groups behind it use the other free courts.
 - **Push notifications** (Web Push) when your group is first in line, when a
-  court is free for a short first group, and when you're called to a court.
+  court is held for your short group, and when you're called to a court.
   Works on Android and on iPhone from the Home Screen app (iOS 16.4+).
 - **Sign up friends** in one go, move people between groups by tapping or
   dragging, and see the day's finished games.

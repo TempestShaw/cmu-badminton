@@ -1,7 +1,7 @@
 // The phone page: check in with today's code, join a group, sign up friends,
 // see where you are in line, and get an alert when it's your turn.
 import {
-  api, h, createLive, storage, playerId, setPlayerId, keyOf, isActive, waiting, startable, courtCard, renderStatus, GROUP_SIZE,
+  api, h, createLive, storage, playerId, setPlayerId, keyOf, isActive, isOpenCourt, waiting, startable, courtCard, renderStatus, GROUP_SIZE,
 } from './core.js';
 import {
   registerWorker, pushStatus, enablePush, linkSubscription, sendTestPush, pushPanel, unlockAudio, showTurnAlert, keepAwake,
@@ -53,7 +53,7 @@ document.addEventListener('pointerdown', unlockAudio, { once: true });
 const friendKeys = () => new Set(friends.map((f) => f.key));
 const myMember = (state) => state.roster.find((m) => m.key === me.key) ?? null;
 const myGroups = (state) => state.groups.filter((g) => isActive(g) && g.players.some((p) => p.key === me.key));
-const freeCourt = (state) => state.courts.find((c) => !c.groupId) ?? null;
+const freeCourt = (state) => state.courts.find(isOpenCourt) ?? null;
 const rerender = () => { if (live.state) render(live.state); };
 
 // ---------------------------------------------------------------- sending actions

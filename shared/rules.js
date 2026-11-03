@@ -8,6 +8,8 @@ export const GROUP_SIZE = 4;
 export const isActive = (group) => group.status === 'waiting' || group.status === 'playing';
 export const isFull = (group) => group.players.length >= GROUP_SIZE;
 export const openSpots = (group) => GROUP_SIZE - group.players.length;
+/** A court the app may send a group to: no game from the line on it, and not marked in use by others. */
+export const isOpenCourt = (court) => !court.groupId && !court.inUse;
 
 /** The line, front first. */
 export function waitingGroups(state) {
@@ -20,7 +22,7 @@ export function waitingGroups(state) {
  * a court). Anyone further back waits; the order holds.
  */
 export function startableGroups(state) {
-  const free = state.courts.filter((c) => !c.groupId).length;
+  const free = state.courts.filter(isOpenCourt).length;
   return waitingGroups(state).filter((g) => g.players.length > 0).slice(0, free);
 }
 

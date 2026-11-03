@@ -109,3 +109,58 @@ test('Undo end puts a game back on its court; Bring back returns a removed group
   const back = await day.host({ type: 'reopen', groupId: extra });
   assert.equal(line(back.state), '4:1');
 });
+
+test('Change court moves a game to a free court quietly, or swaps two games', async () => {
+  const day = await newDay();
+  const [g1, g2] = await day.fillCourts();
+  await day.host({ type: 'finish', courtNo: 3, groupId: (await day.state()).courts[2].groupId });
+  const moved = await day.host({ type: 'moveToCourt', courtNo: 1, groupId: g1, toCourtNo: 3 });
+  assert.equal(onCourts(moved.state), '-,2,1');
+  assert.deepEqual(moved.effects, [], 'nobody is called or alerted');
+  assert.equal(moved.state.groups.find((g) => g.id === g1).court, 3);
+  const swapped = await day.host({ type: 'moveToCourt', courtNo: 2, groupId: g2, toCourtNo: 3 });
+  assert.equal(onCourts(swapped.state), '-,1,2');
+  assert.equal(swapped.state.groups.find((g) => g.id === g1).court, 2);
+});
+
+test('Change court from an outdated screen is refused; phones can\'t use it', async () => {
+  const day = await newDay();
+  const [g1, g2] = await day.fillCourts();
+  assert.equal(await errorCode(() => day.host({ type: 'moveToCourt', courtNo: 1, groupId: g2, toCourtNo: 3 })), 'court_changed');
+  assert.equal(await errorCode(() => day.run({ type: 'moveToCourt', courtNo: 1, groupId: g1, toCourtNo: 3 })), 'not_kiosk');
+});
+
+test('a court marked in use is skipped until it is freed', async () => {
+  const day = await newDay();
+  await day.host({ type: 'setCourtInUse', courtNo: 1, inUse: true });
+  await day.group(['A1', 'A2', 'A3', 'A4']);
+  await day.group(['B1', 'B2', 'B3', 'B4']);
+  const short = await day.group(['S1']);
+  let s = await day.state();
+  assert.equal(onCourts(s), '-,1,2', 'full groups go to courts 2 and 3');
+  assert.equal(await errorCode(() => day.host({ type: 'start', groupId: short, courtNo: 1 })), 'court_busy');
+  await day.group(['F1', 'F2', 'F3', 'F4']);
+  s = (await day.host({ type: 'setCourtInUse', courtNo: 1, inUse: false })).state;
+  assert.equal(onCourts(s), '-,1,2', 'the short group ahead holds the freed court');
+  s = (await day.run({ type: 'start', groupId: short, playerId: day.idOf('S1') })).state;
+  assert.equal(onCourts(s), '3,1,2');
+});
+
+test('a court with a game from the line can\'t be marked in use; phones can\'t mark courts', async () => {
+  const day = await newDay();
+  await day.fillCourts();
+  assert.equal(await errorCode(() => day.host({ type: 'setCourtInUse', courtNo: 1, inUse: true })), 'court_busy');
+  assert.equal(await errorCode(() => day.run({ type: 'setCourtInUse', courtNo: 1, inUse: true })), 'not_kiosk');
+});
+
+test('others were already on court 1: fix the record and the line stays off court 1', async () => {
+  const day = await newDay();
+  // The app sends the first full group to court 1, but people not in the app are playing there.
+  const first = await day.group(['A1', 'A2', 'A3', 'A4']);
+  assert.equal(onCourts(await day.state()), '1,-,-');
+  // They went to court 2 instead; the court screen fixes it and marks court 1 in use.
+  await day.host({ type: 'moveToCourt', courtNo: 1, groupId: first, toCourtNo: 2 });
+  await day.host({ type: 'setCourtInUse', courtNo: 1, inUse: true });
+  await day.group(['B1', 'B2', 'B3', 'B4']);
+  assert.equal(onCourts(await day.state()), '-,1,2', 'the next group goes to court 3, not court 1');
+});

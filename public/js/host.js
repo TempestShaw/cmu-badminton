@@ -3,7 +3,7 @@
 // removed game, send a group back to the line, rename or release a check-in,
 // restore a cleared day) and the bug-report inbox.
 import {
-  api, h, createLive, waiting, courtCard, renderStatus,
+  api, h, createLive, waiting, isOpenCourt, courtCard, renderStatus,
 } from './core.js';
 import { queueItems } from './queue-list.js';
 import { enableDrag, deferWhileDragging } from './dnd.js';
@@ -11,6 +11,7 @@ import { twoTapButton } from './two-tap.js';
 import { historyItems } from './history.js';
 import { promptDialog } from './dialogs.js';
 import { setupPullToRefresh } from './pull-refresh.js';
+import { changeCourtButton, courtUseButton } from './court-move.js';
 import { animateRedraw, animateCourts } from './motion.js';
 
 const $ = (id) => document.getElementById(id);
@@ -108,7 +109,7 @@ async function endDay() {
 }
 
 function groupControls(state, group, index, count) {
-  const freeCourts = state.courts.filter((c) => !c.groupId);
+  const freeCourts = state.courts.filter(isOpenCourt);
   return h('div', { class: 'row group-actions' },
     h('button', { class: 'ghost', type: 'button', disabled: index === 0, 'aria-label': 'Move up',
       onclick: () => act({ type: 'move', groupId: group.id, direction: -1 }) }, '↑ Up'),
@@ -236,7 +237,9 @@ function render(state) {
       twoTapButton({
         id: `back-${group.id}`, label: 'Back to line', confirmLabel: 'Tap again', className: 'secondary', rerender,
         onConfirm: () => act({ type: 'backToLine', groupId: group.id }),
-      })) : null),
+      }),
+      // Playing on another court than the app says? Put the record right.
+      changeCourtButton(state, court, group, act, 'secondary')) : h('div', { class: 'court-actions' }, courtUseButton(court, act, rerender, 'secondary'))),
   }))]);
   renderQueue(state);
   // Ended or removed by mistake? Undo puts them back on their court, or at the front of the line.

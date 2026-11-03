@@ -320,6 +320,8 @@
     <tr><td>Someone pressed <b>End game</b> / <b>Done playing</b> on a game still going</td><td><b>Undo end</b> on that game in <b>Finished games</b>: it goes back on its court (or to the front of the line if the court was taken). No new alerts go out.</td></tr>
     <tr><td>A group was removed by mistake</td><td><b>Bring back</b> in <b>Finished games</b>: back to the front of the line.</td></tr>
     <tr><td>The wrong group was started</td><td><b>Back to line</b> under that court.</td></tr>
+    <tr><td>A group is playing on another court than the app says</td><td><b>Change court</b> on that court and pick where they are.</td></tr>
+    <tr><td>People who didn't sign up are on a court</td><td><b>Mark in use</b> on that court, so the line skips it; <b>Free it</b> when they're done.</td></tr>
     <tr><td>A name has a typo</td><td><b>Checked in</b> → <b>Rename</b>. It changes everywhere.</td></tr>
     <tr><td>Someone used another person's name, or checked in twice</td><td><b>Checked in</b> → <b>Remove</b>: they leave the line and the name is free for the right person.</td></tr>
     <tr><td>Someone holds two spots (<b>⚠ Signed up twice</b>, <b>2×</b> in the line)</td><td>It's one spot per person. If someone ends up with two (say a friend wrote them into the next game while they were still playing), decide whether it's fair and remove the extra spot with <b>✕</b> if not.</td></tr>
@@ -331,9 +333,9 @@
   <ul>
     <li><b>Report a problem</b> messages show up under <b>Bug reports</b> with the sender's name, page and phone type.</li>
     <li><b>No alerts on someone's phone</b>: iPhone must use the Home Screen app and allow notifications; turning notifications on offers a one-time test.</li>
-    <li><b>Court screen says it's locked</b>: unlock it again with the host password (needed after the password changes).</li>
-    <li><b>“Too many wrong host PINs”</b>: 10 wrong tries from one network lock host sign-in there for 10 minutes. Wait, then try again.</li>
-    <li>Runs on free tiers (Vercel + Upstash), comfortable for about ten sessions a month. Built and maintained by Victor: <b>victorkw@andrew.cmu.edu</b> · <b>github.com/TempestShaw</b>.</li>
+    <li><b>Court screen says it's locked</b>: unlock it again with the host password.</li>
+    <li><b>“Too many wrong host PINs”</b>: 10 wrong tries lock host sign-in on that network for 10 minutes.</li>
+    <li>Free tiers, fine for about ten sessions a month. Built by Victor: <b>victorkw@andrew.cmu.edu</b> · <b>github.com/TempestShaw</b>.</li>
   </ul>
   <div class="foot"><span>victorkw@andrew.cmu.edu · github.com/TempestShaw</span><span>Host · 10</span></div>
 </section>

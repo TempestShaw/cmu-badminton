@@ -1,7 +1,7 @@
 // Shared by every page: talking to the API, polling, identity and a tiny
 // element builder. Names from other people only ever reach the DOM as text.
 import {
-  GROUP_SIZE, isActive, waitingGroups, startableGroups,
+  GROUP_SIZE, isActive, isOpenCourt, waitingGroups, startableGroups,
 } from '../../shared/rules.js';
 
 const POLL_MS = 3000;
@@ -263,7 +263,7 @@ export async function keyOf(id) {
 }
 
 // The same rules the server uses (shared/rules.js), under the names pages use.
-export { GROUP_SIZE, isActive };
+export { GROUP_SIZE, isActive, isOpenCourt };
 export const waiting = waitingGroups;
 export const startable = startableGroups;
 export const groupById = (state, id) => state.groups.find((g) => g.id === id) ?? null;
@@ -298,10 +298,13 @@ export function renderStatus(el, status) {
 export function courtCard(state, court, { mineKey, extra } = {}) {
   const group = court.groupId ? groupById(state, court.groupId) : null;
   if (!group) {
-    return h('div', { class: 'court empty', 'data-court': String(court.no), 'data-group-id': '' },
-      h('div', { class: 'label', text: `Court ${court.no}` }),
-      h('div', { class: 'names', text: 'Free' }),
-      extra?.(null));
+    // "In use": people not in the app are playing there, so the line skips it.
+    return h('div', {
+      class: `court empty${court.inUse ? ' in-use' : ''}`, 'data-court': String(court.no), 'data-group-id': court.inUse ? 'in-use' : '',
+    },
+    h('div', { class: 'label', text: `Court ${court.no}` }),
+    h('div', { class: 'names', text: court.inUse ? 'In use' : 'Free' }),
+    extra?.(null));
   }
   const mine = mineKey && group.players.some((p) => p.key === mineKey);
   return h('div', { class: `court${mine ? ' mine' : ''}`, 'data-court': String(court.no), 'data-group-id': group.id },

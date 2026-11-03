@@ -2,7 +2,7 @@
 // button each, the line (anyone can drag people around), and walk-up sign-up.
 // Unlocked once with the host password; it then keeps a token instead.
 import {
-  api, h, createLive, storage, waiting, courtCard, renderStatus,
+  api, h, createLive, storage, waiting, isOpenCourt, courtCard, renderStatus,
 } from './core.js';
 import { queueItems } from './queue-list.js';
 import { enableDrag, deferWhileDragging } from './dnd.js';
@@ -14,6 +14,7 @@ import { alertDialog, reportProblem } from './dialogs.js';
 import { setupVoice, announce } from './kiosk-voice.js';
 import { historyItems } from './history.js';
 import { createLineEditor } from './kiosk-edit.js';
+import { changeCourtButton, courtUseButton } from './court-move.js';
 import { animateRedraw, animateCourts } from './motion.js';
 
 const $ = (id) => document.getElementById(id);
@@ -79,7 +80,7 @@ async function refreshCode() {
 // Board
 
 function groupControls(state, group) {
-  const anyFree = state.courts.some((c) => !c.groupId);
+  const anyFree = state.courts.some(isOpenCourt);
   return h('div', { class: 'row group-actions' },
     anyFree ? twoTapButton({
       id: `start-${group.id}`,
@@ -128,13 +129,16 @@ function render(state) {
     refreshCode();
   }
   animateCourts($('courts'), [...state.courts.map((court) => courtCard(state, court, {
-    extra: (group) => (group ? twoTapButton({
-      id: `finish-${court.no}-${group.id}`,
-      label: 'Done playing',
-      confirmLabel: 'Tap again to confirm',
-      rerender,
-      onConfirm: () => act({ type: 'finish', courtNo: court.no, groupId: group.id }),
-    }) : null),
+    extra: (group) => (group ? [
+      twoTapButton({
+        id: `finish-${court.no}-${group.id}`,
+        label: 'Done playing',
+        confirmLabel: 'Tap again to confirm',
+        rerender,
+        onConfirm: () => act({ type: 'finish', courtNo: court.no, groupId: group.id }),
+      }),
+      changeCourtButton(state, court, group, act),
+    ] : courtUseButton(court, act, rerender)),
   }))]);
   $('queue-empty').hidden = waiting(state).length > 0;
   editor.sync(state);

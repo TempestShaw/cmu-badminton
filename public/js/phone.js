@@ -305,9 +305,14 @@ async function turnOnAlerts() {
   renderPush();
 }
 
+// Push state changed: redraw everything (the group card shows alert status too).
 function renderPush() {
-  rerender();
-  const inLine = live.state ? myGroups(live.state).some((g) => g.status === 'waiting') : false;
+  if (live.state) render(live.state);
+  else drawPushPanel(null);
+}
+
+function drawPushPanel(state) {
+  const inLine = state ? myGroups(state).some((g) => g.status === 'waiting') : false;
   // While someone is in line, the card already asks or warns; keep the panel for steps and tests.
   const showPanel = ui.push.status && !(inLine && ['off', 'denied', 'unsupported'].includes(ui.push.status));
   const panel = showPanel && pushPanel(ui.push.status, {
@@ -360,6 +365,7 @@ function render(state) {
     renderFriends(state);
     $('join-panel').hidden = groups.length > 0;
     renderTogether(state, groups, member);
+    drawPushPanel(state);
   }
   $('courts').replaceChildren(...state.courts.map((court) => courtCard(state, court, { mineKey: me.key })));
   renderQueue(state, member, groups);

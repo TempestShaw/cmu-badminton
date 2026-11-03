@@ -35,11 +35,13 @@
       <div class="error" id="unlock-error" role="alert"></div>
     </form>
 
-    <div class="stack-lg" id="board" hidden>
-      <div class="courts" id="courts"></div>
-      <div class="error" id="error" role="alert"></div>
-
-      <div class="kiosk-lower">
+    <!-- Courts, the line and finished games on the left; today's code and the
+         sign-up form pinned on the right, so one full screen shows all but the
+         end of a long line. -->
+    <div class="kiosk-layout" id="board" hidden>
+      <div class="kiosk-main">
+        <div class="courts" id="courts"></div>
+        <div class="error" id="error" role="alert"></div>
         <section>
           <h2>In line</h2>
           <div class="hint">Groups go in order. Short of players? Tap Start and grab someone. Drag ⠿ to move someone.</div>
@@ -49,13 +51,16 @@
           <ol class="history" id="history"></ol>
           <div id="history-empty" class="empty-state">No games finished yet</div>
         </section>
+      </div>
 
-        <aside class="kiosk-side">
+      <aside class="kiosk-side">
           <section class="panel">
             <h2>Today's code</h2>
-            <div class="day-code num" id="day-code">—</div>
+            <div class="code-row">
+              <div class="day-code num" id="day-code">—</div>
+              <div class="qr" id="qr"></div>
+            </div>
             <div class="notice" id="no-session-note" hidden>No session yet. Start today's session on the host page.</div>
-            <div class="qr" id="qr"></div>
             <div class="small muted" id="site-url"></div>
           </section>
           <form class="panel" id="walkup">
@@ -74,8 +79,7 @@
             <button type="submit" id="walkup-submit">Sign up</button>
             <div class="error" id="walkup-error" role="alert"></div>
           </form>
-        </aside>
-      </div>
+      </aside>
     </div>
     <footer><a href="/">Sign-up page</a> · <a href="/host">Host</a> · <button type="button" class="link" id="report">Report a problem</button> · <a href="mailto:victorkw@andrew.cmu.edu">victorkw@andrew.cmu.edu</a> · <a href="https://github.com/TempestShaw" rel="noopener">GitHub: TempestShaw</a></footer>
   </main>

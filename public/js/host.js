@@ -27,6 +27,9 @@ function readPin() {
 function savePin(value) {
   try { sessionStorage.setItem(PIN_KEY, value); } catch { /* keep it in memory only */ }
 }
+function forgetPin() {
+  try { sessionStorage.removeItem(PIN_KEY); } catch { /* nothing kept */ }
+}
 
 async function act(body) {
   $('error').textContent = '';
@@ -254,6 +257,7 @@ async function login(candidate) {
   savePin(candidate);
   $('login').hidden = true;
   $('panel').hidden = false;
+  $('sign-out').hidden = false;
   live.push(state);
   render(state);
   loadInbox();
@@ -269,6 +273,11 @@ $('login').addEventListener('submit', async (event) => {
   }
 });
 $('inbox-refresh').addEventListener('click', loadInbox);
+// On a shared computer: forget the password here and go back to the sign-in box.
+$('sign-out').addEventListener('click', () => {
+  forgetPin();
+  location.reload();
+});
 
 enableDrag($('queue'), {
   onPlayerDrop: ({ playerKey, fromGroupId, groupId }) => act({ type: 'movePlayer', playerKey, fromGroupId, groupId }),

@@ -15,11 +15,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Open+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
+<body class="host">
   <main>
     <header class="topbar">
       <h1>Host</h1>
-      <div class="sync" id="sync">Connecting…</div>
+      <div class="row topbar-right">
+        <div class="sync" id="sync">Connecting…</div>
+        <button type="button" class="ghost" id="sign-out" hidden>Sign out</button>
+      </div>
     </header>
 
     <form class="panel" id="login">
@@ -31,38 +34,44 @@
       <div class="error" id="login-error" role="alert"></div>
     </form>
 
+    <!-- Wide screens: courts and the line on the left, everything else on the
+         right. Phones: one column, in the order the `order` rules give. -->
     <div id="panel" hidden>
-      <section class="panel">
-        <h2>Today</h2>
-        <div class="stack" id="today"></div>
-      </section>
-      <details class="panel roster-panel" id="roster-panel">
-        <summary>Checked in <span class="badge" id="roster-count">0</span></summary>
-        <div class="notice">Rename fixes a typo. Remove takes back a check-in (a duplicate, or someone using another person's name): they leave the line and the name is free again.</div>
-        <ul class="friend-list" id="roster"></ul>
-      </details>
-      <div class="error" id="error" role="alert"></div>
-      <section>
-        <h2>On court</h2>
-        <div class="courts" id="courts"></div>
-      </section>
-      <section>
-        <h2>In line</h2>
-        <div class="hint">Drag ⠿ on a person to move them, or on a group's title to reorder the line.</div>
-        <ol class="queue" id="queue"></ol>
-        <div id="queue-empty" class="empty-state" hidden>No one in line yet</div>
-      </section>
-      <section>
-        <h2>Finished games</h2>
-        <ol class="history" id="history"></ol>
-        <div id="history-empty" class="empty-state">No games finished yet</div>
-      </section>
-      <section class="panel">
-        <div class="row spread"><h2>Bug reports</h2><button type="button" class="ghost" id="inbox-refresh">Refresh</button></div>
-        <ul class="inbox" id="inbox"></ul>
-        <div class="empty-state" id="inbox-empty" hidden>Nothing reported.</div>
-        <div class="error" id="inbox-error" role="alert"></div>
-      </section>
+      <div class="host-main">
+        <div class="error" id="error" role="alert"></div>
+        <section class="host-courts">
+          <h2>On court</h2>
+          <div class="courts" id="courts"></div>
+        </section>
+        <section class="host-line">
+          <h2>In line</h2>
+          <div class="hint">Drag ⠿ on a person to move them, or on a group's title to reorder the line.</div>
+          <ol class="queue" id="queue"></ol>
+          <div id="queue-empty" class="empty-state" hidden>No one in line yet</div>
+        </section>
+      </div>
+      <div class="host-side">
+        <section class="panel host-today">
+          <h2>Today</h2>
+          <div class="stack" id="today"></div>
+        </section>
+        <details class="panel roster-panel host-roster" id="roster-panel">
+          <summary>Checked in <span class="badge" id="roster-count">0</span></summary>
+          <div class="notice">Rename fixes a typo. Remove takes back a check-in (a duplicate, or someone using another person's name): they leave the line and the name is free again.</div>
+          <ul class="friend-list" id="roster"></ul>
+        </details>
+        <section class="host-history">
+          <h2>Finished games</h2>
+          <ol class="history" id="history"></ol>
+          <div id="history-empty" class="empty-state">No games finished yet</div>
+        </section>
+        <section class="panel host-reports">
+          <div class="row spread"><h2>Bug reports</h2><button type="button" class="ghost" id="inbox-refresh">Refresh</button></div>
+          <ul class="inbox" id="inbox"></ul>
+          <div class="empty-state" id="inbox-empty" hidden>Nothing reported.</div>
+          <div class="error" id="inbox-error" role="alert"></div>
+        </section>
+      </div>
     </div>
     <footer><a href="/">Sign-up page</a> · <a href="/kiosk">Court screen</a> · <a href="mailto:victorkw@andrew.cmu.edu">victorkw@andrew.cmu.edu</a> · <a href="https://github.com/TempestShaw" rel="noopener">GitHub: TempestShaw</a></footer>
   </main>

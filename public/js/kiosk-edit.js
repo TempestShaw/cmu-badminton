@@ -93,7 +93,6 @@ export function createLineEditor({ els, getState, send, refresh, rerender }) {
     const removing = picks;
     const choice = await openDialog({
       title: `Remove ${listNames(removing)} from the line?`,
-      body: ['They stay checked in and can sign up again.'],
       actions: [{ label: 'Cancel', value: '', kind: 'secondary' }, { label: 'Remove', value: 'remove', kind: 'danger' }],
     });
     if (choice !== 'remove') return;

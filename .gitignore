@@ -4,3 +4,4 @@ node_modules
 host-pin.txt
 dist
 .DS_Store
+.claude

@@ -82,6 +82,7 @@ const authHeaders = ({ hostPin, kioskToken } = {}) => ({
 
 export const api = {
   state: () => request('/api/state'),
+  realtime: () => request('/api/realtime'),
   /** @returns {Promise<{state: object, result: object|null}>} */
   action: (body, auth) => request('/api/action', {
     method: 'POST',
@@ -133,8 +134,13 @@ export function createLive(onState, onStatus = () => {}, { interval = () => POLL
   };
 
   // Redrawing swaps out buttons, which can swallow a tap in progress, so only
-  // redraw when something changed.
+  // redraw when something changed. A copy older than the one on screen (a
+  // late push, a cached poll) is ignored.
   const accept = (state) => {
+    if (latest && (state.rev ?? 0) < (latest.rev ?? 0)) {
+      onStatus({ online: true, at: Date.now() });
+      return;
+    }
     const json = JSON.stringify(state);
     latest = state;
     if (json !== latestJson) {
@@ -170,7 +176,62 @@ export function createLive(onState, onStatus = () => {}, { interval = () => POLL
   window.addEventListener('online', tick);
   window.addEventListener('pageshow', (event) => { if (event.persisted) tick(); });
   tick();
+  listenForPushes(accept, tick);
   return { push: accept, refresh: tick, get state() { return latest; } };
+}
+
+// ---------------------------------------------------------------- live push
+// The server sends each new state through Ably the moment it's saved (see
+// lib/realtime.js). Polling keeps running underneath and covers any gap.
+const PUSH_RETRY_MS = [2000, 5000, 15000, 60000];
+const PUSH_RENEW_EARLY_MS = 2 * 60 * 1000;
+const PUSH_MIN_RENEW_MS = 60 * 1000;
+
+function listenForPushes(onState, onPing) {
+  let source = null;
+  let timer = null;
+  let failures = 0;
+  const stop = () => {
+    clearTimeout(timer);
+    source?.close();
+    source = null;
+  };
+  // Errors include Ably's own (an expired token): back off, then start over with a fresh token.
+  const retry = () => {
+    stop();
+    timer = setTimeout(start, PUSH_RETRY_MS[Math.min(failures, PUSH_RETRY_MS.length - 1)]);
+    failures += 1;
+  };
+  async function start() {
+    stop();
+    if (document.visibilityState !== 'visible' || typeof EventSource !== 'function') return;
+    let listener;
+    try {
+      listener = await api.realtime();
+    } catch {
+      retry();
+      return;
+    }
+    if (!listener.enabled || document.visibilityState !== 'visible') return;
+    source = new EventSource(listener.url);
+    source.onopen = () => { failures = 0; };
+    source.onmessage = (event) => {
+      let data;
+      try { data = JSON.parse(event.data); } catch { return; }
+      // A full state, or just a revision number when the state was too big to send.
+      if (Array.isArray(data?.groups) && Array.isArray(data.courts)) onState(data);
+      else if (typeof data === 'number') onPing();
+    };
+    source.onerror = retry;
+    // Swap in a fresh token a little before this one runs out.
+    timer = setTimeout(start, Math.max(listener.expires - Date.now() - PUSH_RENEW_EARLY_MS, PUSH_MIN_RENEW_MS));
+  }
+  // A phone in a pocket doesn't need a live connection; it reconnects when opened.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') start();
+    else stop();
+  });
+  start();
 }
 
 export const storage = {

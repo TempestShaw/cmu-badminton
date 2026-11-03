@@ -55,6 +55,13 @@ phones ──poll /api/state (CDN-cached ~2 s)──▶ Vercel functions ──�
   less often when idle and stop when hidden; the court screen and host page
   keep polling every few seconds while a session runs, so they never lag. In the Home Screen
   app, pulling down re-reads the queue (at most once every three seconds).
+- **Live push on top of polling.** After each change the server sends the new
+  public state through [Ably](https://ably.com) (free tier); pages listen with
+  the browser's own `EventSource` and a short-lived, subscribe-only token from
+  `/api/realtime`, so updates land in about 0.1–0.2 s. Every state carries a
+  revision number, so a late push or cached poll never overwrites newer data.
+  Polling keeps running underneath and covers any gap (Ably down, a push
+  dropped by its 50-per-second channel limit, or no keys set).
 - **Stays up to date.** Every reply names the deployment that sent it; a page
   left open reloads itself after a deploy once nobody is touching it.
 - **Privacy.** Each phone keeps a random secret id; the public state only shows
@@ -100,6 +107,8 @@ VAPID keys push notifications are simply off.
    | `HOST_PIN` | the host password |
    | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | from the command above |
    | `VAPID_SUBJECT` | your site URL or `mailto:` address |
+   | `ABLY_PUBLISH_KEY` | optional: an Ably key that can publish (live push) |
+   | `ABLY_SUBSCRIBE_KEY` | optional: an Ably key that can only subscribe |
 
 3. Deploy. Vercel runs `npm run build` and serves `dist/`.
 

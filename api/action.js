@@ -4,6 +4,7 @@ import { getStore } from '../lib/store.js';
 import { runAction } from '../lib/actions.js';
 import { toPublic } from '../lib/queue.js';
 import { notify } from '../lib/push.js';
+import { publishState } from '../lib/realtime.js';
 import { guardHostPin } from '../lib/pin-guard.js';
 import {
   handle, ok, readJson, clientIp, HttpError,
@@ -32,11 +33,16 @@ export const POST = handle(async (request) => {
   await guardHostPin(store, ip, hostPin);
   // Ending the day asks for the password again; a wrong one counts as a miss too.
   if (body.type === 'endDay') await guardHostPin(store, ip, typeof body.confirmPin === 'string' ? body.confirmPin : '');
-  const { state, effects, result } = await runAction(store, body, {
+  const {
+    state, effects, changed, result,
+  } = await runAction(store, body, {
     hostPin,
     kioskToken: request.headers.get('x-kiosk-token'),
   });
-  // Answer whoever tapped right away; alerts finish sending in the background.
+  const publicState = toPublic(state);
+  // Answer whoever tapped right away; alerts and the live push to every open
+  // page finish in the background.
   waitUntil(notify(store, effects).catch((error) => console.error('notify failed', error?.message)));
-  return ok({ state: toPublic(state), result });
+  if (changed) waitUntil(publishState(publicState));
+  return ok({ state: publicState, result });
 });

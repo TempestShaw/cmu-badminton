@@ -64,7 +64,8 @@ function renderToday(state) {
   }
   const started = new Date(state.session.startedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
   const doubled = state.roster.filter((m) => doubleKeys(state).has(m.key)).map((m) => m.name);
-  box.replaceChildren(
+  // replaceChildren() would print a skipped (null) piece as the word "null".
+  box.replaceChildren(...[
     h('div', { class: 'day-code num', text: host.code ?? '…' }),
     h('div', { class: 'small muted', text: `${state.roster.length} checked in · started ${started}` }),
     doubled.length ? h('button', {
@@ -85,7 +86,8 @@ function renderToday(state) {
         onConfirm: () => act({ type: 'endDay' }),
       }),
       undoDayButton()),
-    h('div', { class: 'notice', text: 'New code: when the code got shared outside the hall; everyone checked in stays. Start a new day: clears everything and makes a new code. End today: clears everything and closes sign-ups until the next session. A day also ends on its own 18 hours after it started.' }));
+    h('div', { class: 'notice', text: 'New code: when the code got shared outside the hall; everyone checked in stays. Start a new day: clears everything and makes a new code. End today: clears everything and closes sign-ups until the next session. A day also ends on its own 18 hours after it started.' }),
+  ].filter(Boolean));
 }
 
 function groupControls(state, group, index, count) {

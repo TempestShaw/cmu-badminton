@@ -1,5 +1,6 @@
 // Optional read-aloud on the court screen: when a group is called, this
-// computer says "Group 5, please go to court 2" and the names. Not push notifications.
+// computer says "Group 5, please go to court 2" (group and court only, no
+// names). Separate from the push notifications phones get.
 let voiceOn = false;
 let announced = null;
 
@@ -14,9 +15,9 @@ function speak(text) {
 export function setupVoice(button) {
   button.addEventListener('click', () => {
     voiceOn = !voiceOn;
-    button.textContent = voiceOn ? '🔊 Reading names aloud' : '🔊 Read names aloud';
+    button.textContent = voiceOn ? '🔊 Announcing groups' : '🔊 Announce groups';
     button.classList.toggle('confirm', voiceOn);
-    if (voiceOn) speak('I will read out each group when it is called');
+    if (voiceOn) speak('I will announce each group when it is called');
     else speechSynthesis?.cancel();
   });
 }
@@ -32,7 +33,7 @@ export function announce(state) {
     if (announced.has(group.id)) continue;
     announced.add(group.id);
     if (!voiceOn) continue;
-    const line = `Group ${group.no}, please go to court ${group.court}. ${group.players.map((p) => p.name).join(', ')}`;
+    const line = `Group ${group.no}, please go to court ${group.court}.`;
     speak(line);
     speak(line);
   }

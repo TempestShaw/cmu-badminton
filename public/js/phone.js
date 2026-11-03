@@ -351,7 +351,10 @@ function drawPushPanel(state) {
       renderPush();
       try {
         await sendTestPush();
-        ui.push = { ...ui.push, busy: false, tested: true, note: 'Sent. Did it show on your lock screen? If not, check this site\'s notification settings and Focus / Do Not Disturb.' };
+        ui.push = {
+          ...ui.push, busy: false, tested: true,
+          note: 'Lock your phone now: the test arrives in about 10 seconds. Nothing? Check this site\'s notification settings and Focus / Do Not Disturb.',
+        };
       } catch (error) {
         ui.push = { ...ui.push, busy: false, error: error.message };
       }

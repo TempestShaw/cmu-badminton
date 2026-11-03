@@ -1,3 +1,4 @@
+import { waitUntil } from '@vercel/functions';
 import { getStore } from '../lib/store.js';
 import { checkSubscription, sendTest } from '../lib/push.js';
 import {
@@ -17,7 +18,15 @@ export const POST = handle(async (request) => {
   const body = await readJson(request);
   const subscription = checkSubscription(body.subscription);
   const delay = Number.isFinite(body.delaySeconds) ? Math.min(Math.max(body.delaySeconds, 0), MAX_DELAY_SECONDS) : 0;
-  if (delay) await new Promise((resolve) => { setTimeout(resolve, delay * 1000); });
-  await sendTest(subscription);
-  return ok({ sent: true });
+  if (!delay) {
+    await sendTest(subscription);
+    return ok({ sent: true });
+  }
+  // Answer right away and send after the delay in the background: the phone is
+  // locked by then, and a locked iPhone pauses the page's network requests.
+  waitUntil((async () => {
+    await new Promise((resolve) => { setTimeout(resolve, delay * 1000); });
+    await sendTest(subscription);
+  })().catch((error) => console.error('test push failed', error?.message)));
+  return ok({ scheduled: true, delaySeconds: delay });
 });

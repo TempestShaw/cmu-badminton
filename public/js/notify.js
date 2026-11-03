@@ -81,7 +81,7 @@ export const TEST_DELAY_SECONDS = 10;
 export async function sendTestPush() {
   const reg = await navigator.serviceWorker.getRegistration();
   const subscription = await reg?.pushManager.getSubscription();
-  if (!subscription) throw new Error('Notifications aren\'t set up on this phone yet');
+  if (!subscription) throw Object.assign(new Error('Notifications aren\'t set up on this phone yet'), { code: 'no_subscription' });
   await api.pushTest(subscription.toJSON(), TEST_DELAY_SECONDS);
 }
 
@@ -91,7 +91,7 @@ export function pushPanel(status, { onEnable, onTest, busy, error, note }) {
   if (status === 'on') {
     panel.append(
       h('div', { class: 'notice', text: '✓ Notifications are on.' }),
-      onTest ? h('div', { class: 'row' }, h('button', { class: 'secondary', type: 'button', onclick: onTest, disabled: busy }, busy ? 'Lock your phone now…' : 'Send a test in 10 seconds')) : null,
+      onTest ? h('div', { class: 'row' }, h('button', { class: 'secondary', type: 'button', onclick: onTest, disabled: busy }, busy ? 'Setting up the test…' : 'Send a test in 10 seconds')) : null,
     );
   } else if (status === 'off') {
     panel.append(

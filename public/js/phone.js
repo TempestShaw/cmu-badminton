@@ -346,8 +346,10 @@ function drawPushPanel(state) {
     error: ui.push.error,
     note: ui.push.note,
     // One test, then the button goes; the result note stays until the page reloads.
+    // Say "lock your phone" only once the server has the test queued: locking
+    // earlier would cut the request off.
     onTest: ui.push.tested ? null : async () => {
-      ui.push = { ...ui.push, busy: true, error: '', note: 'Lock your phone now. The test arrives in about 10 seconds.' };
+      ui.push = { ...ui.push, busy: true, error: '', note: '' };
       renderPush();
       try {
         await sendTestPush();
@@ -356,7 +358,11 @@ function drawPushPanel(state) {
           note: 'Lock your phone now: the test arrives in about 10 seconds. Nothing? Check this site\'s notification settings and Focus / Do Not Disturb.',
         };
       } catch (error) {
-        ui.push = { ...ui.push, busy: false, error: error.message };
+        // No answer at all (often the phone locked mid-request) isn't a failure:
+        // the test may well be on its way. Only the server's own errors are.
+        ui.push = error.code
+          ? { ...ui.push, busy: false, error: error.message }
+          : { ...ui.push, busy: false, tested: true, note: 'Didn\'t hear back from the server, but if the test notification arrives, alerts work.' };
       }
       renderPush();
     },

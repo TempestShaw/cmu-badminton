@@ -29,7 +29,8 @@ async function runApi(req, res, name) {
 }
 
 function send(res, status, type, body) {
-  res.writeHead(status, { 'Content-Type': type });
+  // Never cached, so an edited file shows up on the next reload.
+  res.writeHead(status, { 'Content-Type': type, 'Cache-Control': 'no-store' });
   res.end(body);
 }
 

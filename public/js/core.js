@@ -12,6 +12,9 @@ const IDLE_SLEEP_POLL_MS = 5 * 60 * 1000;
 const RETRY_BASE_MS = 1000;
 const FAILURES_BEFORE_OFFLINE = 3;
 const STORAGE_PREFIX = 'bq.';
+// After a new deploy, an open page reloads once nobody has touched it for this long.
+const UPDATE_IDLE_MS = 30 * 1000;
+const UPDATE_CHECK_MS = 5 * 1000;
 
 export function h(tag, props = {}, ...children) {
   const el = document.createElement(tag);
@@ -29,6 +32,28 @@ export function h(tag, props = {}, ...children) {
   return el;
 }
 
+// ---------------------------------------------------------------- staying up to date
+// Every reply names the deployment that sent it. A page left open (the court
+// screen, a phone in a pocket) reloads itself once a newer one is live, but
+// only when nobody is mid-tap, typing, dragging or looking at a dialog.
+let firstVersion = null;
+let updateTimer = null;
+let lastInputAt = Date.now();
+for (const type of ['pointerdown', 'keydown', 'input']) {
+  addEventListener(type, () => { lastInputAt = Date.now(); }, { capture: true, passive: true });
+}
+
+const busy = () => Date.now() - lastInputAt < UPDATE_IDLE_MS
+  || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)
+  || Boolean(document.querySelector('dialog[open]'))
+  || document.body.classList.contains('dragging');
+
+function noteVersion(version) {
+  firstVersion ??= version;
+  if (version === firstVersion || updateTimer) return;
+  updateTimer = setInterval(() => { if (!busy()) location.reload(); }, UPDATE_CHECK_MS);
+}
+
 // A phone waking up can leave a request hanging forever; give up and retry instead.
 const REQUEST_TIMEOUT_MS = 8000;
 
@@ -40,6 +65,7 @@ async function request(url, options = {}) {
     throw new Error("Can't reach the server. Check your connection.");
   }
   const json = await response.json().catch(() => null);
+  if (json?.version) noteVersion(json.version);
   if (!json?.success) {
     const error = new Error(json?.error?.message || `Server error (${response.status})`);
     error.code = json?.error?.code ?? null;

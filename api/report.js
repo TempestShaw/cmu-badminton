@@ -2,6 +2,7 @@
 import { randomUUID } from 'node:crypto';
 import { getStore } from '../lib/store.js';
 import { isHostPin } from '../lib/auth.js';
+import { guardHostPin } from '../lib/pin-guard.js';
 import {
   handle, ok, readJson, clientIp, HttpError,
 } from '../lib/http.js';
@@ -12,8 +13,10 @@ const WINDOW_SECONDS = 600;
 
 const text = (value, max) => (typeof value === 'string' ? value.trim().slice(0, max) : '');
 
-function requireHost(request) {
-  if (!isHostPin(request.headers.get('x-host-pin'))) throw new HttpError(403, 'not_host', 'Wrong host PIN');
+async function requireHost(request) {
+  const pin = request.headers.get('x-host-pin');
+  await guardHostPin(getStore(), clientIp(request), pin);
+  if (!isHostPin(pin)) throw new HttpError(403, 'not_host', 'Wrong host PIN');
 }
 
 // Anyone can report a problem; reports land in the host's inbox.
@@ -39,12 +42,12 @@ export const POST = handle(async (request) => {
 });
 
 export const GET = handle(async (request) => {
-  requireHost(request);
+  await requireHost(request);
   return ok({ items: await getStore().listInbox() });
 });
 
 export const DELETE = handle(async (request) => {
-  requireHost(request);
+  await requireHost(request);
   const id = new URL(request.url).searchParams.get('id');
   if (!id) throw new HttpError(400, 'missing_id', 'Which report?');
   await getStore().deleteInbox(id);

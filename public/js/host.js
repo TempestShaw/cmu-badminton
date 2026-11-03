@@ -10,6 +10,7 @@ import { enableDrag, deferWhileDragging } from './dnd.js';
 import { twoTapButton } from './two-tap.js';
 import { historyItems } from './history.js';
 import { promptDialog } from './dialogs.js';
+import { setupPullToRefresh } from './pull-refresh.js';
 
 const $ = (id) => document.getElementById(id);
 const PIN_KEY = 'bq.hostPin';
@@ -263,6 +264,7 @@ enableDrag($('queue'), {
 });
 
 const live = createLive((state) => deferWhileDragging(() => render(state)), (status) => renderStatus($('sync'), status), { interval: () => 5000 });
+setupPullToRefresh(live.refresh);
 const remembered = readPin();
 if (remembered) login(remembered).catch(() => {});
 setInterval(loadInbox, INBOX_REFRESH_MS);

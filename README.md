@@ -27,7 +27,10 @@ the courts, the line and today's sign-up code.
   dragging, and see the day's finished games.
 - **Fair-play limits:** one spot per person (the host page flags anyone
   signed up twice), one phone can hold spots for at most three friends,
-  per-network rate limits.
+  per-network rate limits, and 10 wrong host PINs lock host sign-in on that
+  network for 10 minutes.
+- **Name bubbles:** each player can give their name in the line a color and a
+  pattern (12 × 8 SVG combinations); the phone remembers it for next time.
 - **Three screens:** the phone page (`/`), the court-side screen (`/kiosk`,
   unlocked once with the host password) and the host page (`/host`).
 
@@ -48,7 +51,10 @@ phones ──poll /api/state (CDN-cached ~2 s)──▶ Vercel functions ──�
   people tapping at the same instant.
 - **Cheap polling.** `/api/state` is cached at the CDN for two seconds, so Redis
   sees about one read every two seconds however many phones are watching.
-  Phones poll less often when idle and stop when hidden.
+  Phones poll less often when idle and stop when hidden. In the Home Screen
+  app, pulling down re-reads the queue (at most once every three seconds).
+- **Stays up to date.** Every reply names the deployment that sent it; a page
+  left open reloads itself after a deploy once nobody is touching it.
 - **Privacy.** Each phone keeps a random secret id; the public state only shows
   a hash of it. Today's code never appears in the public state.
 - **No framework.** Plain ES modules in [`public/js`](public/js), bundled by

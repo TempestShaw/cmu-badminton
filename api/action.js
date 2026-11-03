@@ -4,6 +4,7 @@ import { getStore } from '../lib/store.js';
 import { runAction } from '../lib/actions.js';
 import { toPublic } from '../lib/queue.js';
 import { notify } from '../lib/push.js';
+import { guardHostPin } from '../lib/pin-guard.js';
 import {
   handle, ok, readJson, clientIp, HttpError,
 } from '../lib/http.js';
@@ -25,9 +26,12 @@ async function guard(store, ip, type) {
 export const POST = handle(async (request) => {
   const store = getStore();
   const body = await readJson(request);
-  await guard(store, clientIp(request), body.type);
+  const ip = clientIp(request);
+  const hostPin = request.headers.get('x-host-pin');
+  await guard(store, ip, body.type);
+  await guardHostPin(store, ip, hostPin);
   const { state, effects, result } = await runAction(store, body, {
-    hostPin: request.headers.get('x-host-pin'),
+    hostPin,
     kioskToken: request.headers.get('x-kiosk-token'),
   });
   // Answer whoever tapped right away; alerts finish sending in the background.

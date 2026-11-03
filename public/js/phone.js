@@ -15,6 +15,8 @@ import { twoTapButton } from './two-tap.js';
 import { openDialog, alertDialog, pickDialog, reportProblem } from './dialogs.js';
 import { setupInstall } from './install.js';
 import { historyItems } from './history.js';
+import { setupPullToRefresh } from './pull-refresh.js';
+import { createLookPicker } from './look-picker.js';
 
 const $ = (id) => document.getElementById(id);
 // Don't flash "you're up" at someone who opens the page long after being called.
@@ -373,6 +375,7 @@ function render(state) {
   $('history-panel').hidden = history.length === 0;
   $('history-count').textContent = String(history.length);
   $('history').replaceChildren(...history);
+  updateLook(state, member);
   maybeAlert(state, groups);
   keepAwake(groups.length > 0 || friends.length > 0);
 }
@@ -420,11 +423,18 @@ setupTogether({
   explain,
 });
 
+const updateLook = createLookPicker($('look-panel'), {
+  send: (look) => api.action({ playerId: me.id, type: 'setLook', look })
+    .then(({ state }) => live.push(state))
+    .catch((error) => showError(error.message)),
+});
+
 const live = createLive(
   (state) => deferWhileDragging(() => { if (me.key) render(state); }),
   (status) => renderStatus($('sync'), status),
   { interval: (state) => (state && (myGroups(state).length || friends.length) ? IN_LINE_POLL_MS : WATCHING_POLL_MS) },
 );
+setupPullToRefresh(live.refresh);
 
 // Start: work out who this phone is, then find out whether alerts can work here.
 (async () => {

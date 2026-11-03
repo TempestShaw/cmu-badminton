@@ -4,7 +4,8 @@ import {
   handle, ok, readJson, clientIp, HttpError,
 } from '../lib/http.js';
 
-const TESTS_PER_10_MIN = 10;
+// Per network: a whole hall can share one Wi-Fi address on the first night.
+const TESTS_PER_10_MIN = 60;
 // Long enough to lock the phone and see the alert arrive on the lock screen.
 const MAX_DELAY_SECONDS = 15;
 

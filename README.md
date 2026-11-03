@@ -24,8 +24,18 @@ the courts, the line and today's sign-up code.
 - **Push notifications** (Web Push) when your group is first in line, when a
   court is held for your short group, and when you're called to a court.
   Works on Android and on iPhone from the Home Screen app (iOS 16.4+).
-- **Sign up friends** in one go, move people between groups by tapping or
-  dragging, and see the day's finished games.
+- **Sign up friends** in one go, move people between groups by tapping an
+  open spot or dragging, and see the day's finished games. Phones fold full
+  groups into one line; the join button names the group you'd land in.
+- **Court-side screen** fits one laptop screen: courts, the line, today's code
+  and a walk-up sign-up form. Its Edit mode moves or removes up to four picked
+  people at once, all or nothing, and it can read out which group goes where.
+- **Host tools:** undo an ended game or a removed group, send a group back to
+  the line, rename or take back a check-in, reorder groups, new code, and
+  end the day (password again, undo within 30 minutes). Two columns on a
+  laptop, one on a phone.
+- **Motion that explains changes:** people and groups glide to their new
+  places, newcomers fade in, leavers fade out (off with reduced motion).
 - **Fair-play limits:** one spot per person (the host page flags anyone
   signed up twice), one phone can hold spots for at most three friends,
   per-network rate limits, and 10 wrong host PINs lock host sign-in on that
@@ -74,13 +84,15 @@ phones ──poll /api/state (CDN-cached ~2 s)──▶ Vercel functions ──�
 
 | Path | What's there |
 | --- | --- |
-| `api/` | Vercel functions: `state` (read), `action` (every write), `subscribe`, `pushtest`, `report` |
+| `api/` | Vercel functions: `state` (read), `action` (every write), `realtime` (live-push token), `subscribe`, `pushtest`, `report` |
 | `lib/queue.js` | Queue rules: groups, courts, moving people, who to notify |
 | `lib/session.js` | Today's code, check-in, unique names, signing up friends |
 | `lib/actions.js` | Permissions per action and the compare-and-set retry loop |
-| `lib/auth.js`, `lib/validate.js` | Host password / court-screen token, input checks |
-| `lib/push.js`, `lib/store.js` | Web Push sending, Redis (or in-memory) storage |
+| `lib/auth.js`, `lib/pin-guard.js`, `lib/validate.js` | Host password / court-screen token, wrong-PIN lockout, input checks |
+| `lib/push.js`, `lib/realtime.js`, `lib/store.js` | Web Push, Ably live push, Redis (or in-memory) storage |
+| `lib/looks.js` | The allowed name-bubble colors and patterns |
 | `public/` | The three pages, their scripts, styles, service worker and icons |
+| `tests/` | `npm test`: the queue rules and actions, in memory |
 | `scripts/` | Local dev server, production build, icon drawing |
 | `docs/` | The user guide (HTML source, screenshots, PDF) |
 

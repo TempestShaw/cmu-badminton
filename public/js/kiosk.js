@@ -209,7 +209,13 @@ async function stayAwake() {
 }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') stayAwake(); });
 
-const live = createLive((state) => deferWhileDragging(() => render(state)), (status) => renderStatus($('sync'), status));
+// Every 2 seconds and never slower while a session runs: phones' changes, calls
+// to court and the read-aloud show up here within a few seconds.
+const KIOSK_POLL_MS = 2000;
+const live = createLive((state) => deferWhileDragging(() => render(state)), (status) => renderStatus($('sync'), status), {
+  interval: () => KIOSK_POLL_MS,
+  keepUp: (state) => Boolean(state?.session),
+});
 if (kiosk.token) showBoard();
 else lock();
 stayAwake();

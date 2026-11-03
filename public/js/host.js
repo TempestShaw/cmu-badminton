@@ -284,7 +284,10 @@ enableDrag($('queue'), {
   onGroupDrop: ({ groupId, beforeGroupId }) => act({ type: 'reorder', groupId, beforeGroupId }),
 });
 
-const live = createLive((state) => deferWhileDragging(() => render(state)), (status) => renderStatus($('sync'), status), { interval: () => 5000 });
+const live = createLive((state) => deferWhileDragging(() => render(state)), (status) => renderStatus($('sync'), status), {
+  interval: () => 5000,
+  keepUp: (state) => Boolean(state?.session),
+});
 setupPullToRefresh(live.refresh);
 const remembered = readPin();
 if (remembered) login(remembered).catch(() => {});

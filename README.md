@@ -50,9 +50,10 @@ phones ──poll /api/state (CDN-cached ~2 s)──▶ Vercel functions ──�
   writes back with a Lua compare-and-set; if someone else wrote first it backs
   off at random and retries ([`lib/actions.js`](lib/actions.js)). Tested with 60
   people tapping at the same instant.
-- **Cheap polling.** `/api/state` is cached at the CDN for two seconds, so Redis
-  sees about one read every two seconds however many phones are watching.
-  Phones poll less often when idle and stop when hidden. In the Home Screen
+- **Cheap polling.** `/api/state` is cached at the CDN for one second, so Redis
+  sees about one read a second however many phones are watching. Phones poll
+  less often when idle and stop when hidden; the court screen and host page
+  keep polling every few seconds while a session runs, so they never lag. In the Home Screen
   app, pulling down re-reads the queue (at most once every three seconds).
 - **Stays up to date.** Every reply names the deployment that sent it; a page
   left open reloads itself after a deploy once nobody is touching it.

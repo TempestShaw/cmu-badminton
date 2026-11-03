@@ -114,8 +114,10 @@ export const api = {
 /**
  * Polls while the page is visible; `push` lets an action's response update immediately.
  * `interval` decides how often: every poll is a CDN request, which the free plan counts.
+ * Quiet pages slow down to save them, unless `keepUp` says this page must stay
+ * current (the court screen during a session: its alerts and voice can't lag).
  */
-export function createLive(onState, onStatus = () => {}, { interval = () => POLL_MS } = {}) {
+export function createLive(onState, onStatus = () => {}, { interval = () => POLL_MS, keepUp = () => false } = {}) {
   let timer = null;
   let latest = null;
   let latestJson = '';
@@ -124,6 +126,7 @@ export function createLive(onState, onStatus = () => {}, { interval = () => POLL
   const nextDelay = () => {
     const idle = Date.now() - changedAt;
     const base = interval(latest);
+    if (keepUp(latest)) return base;
     if (idle > IDLE_SLEEP_AFTER_MS) return Math.max(base, IDLE_SLEEP_POLL_MS);
     if (idle > IDLE_SLOW_AFTER_MS) return Math.max(base, IDLE_SLOW_POLL_MS);
     return base;

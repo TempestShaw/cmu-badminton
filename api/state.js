@@ -3,14 +3,15 @@ import { loadState } from '../lib/actions.js';
 import { toPublic } from '../lib/queue.js';
 import { handle, ok } from '../lib/http.js';
 
-// Every phone polls this. The CDN serves one cached copy for a couple of
-// seconds, so Redis sees about one read per two seconds however many people
-// are watching. Writes return fresh state directly to whoever made them.
+// Every phone polls this. The CDN serves one cached copy for a second, so
+// Redis sees about one read a second however many people are watching, and a
+// change reaches the court screen within a few seconds. Writes return fresh
+// state directly to whoever made them.
 export const GET = handle(async () => {
   const started = performance.now();
   const { state } = await loadState(getStore());
   return ok(toPublic(state), {
-    'Cache-Control': 'public, max-age=0, s-maxage=2, stale-while-revalidate=3',
+    'Cache-Control': 'public, max-age=0, s-maxage=1, stale-while-revalidate=1',
     'Server-Timing': `redis;dur=${(performance.now() - started).toFixed(1)}`,
   });
 });

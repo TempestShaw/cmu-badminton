@@ -66,7 +66,7 @@ function explain(error, onOther) {
   else onOther(error.message);
 }
 
-async function act(body) {
+async function act(body, onError = showError) {
   if (ui.busy) return null;
   ui.busy = true;
   showError('');
@@ -75,7 +75,7 @@ async function act(body) {
     live.push(state);
     return result ?? {};
   } catch (error) {
-    explain(error, showError);
+    explain(error, onError);
     live.refresh();
     return null;
   } finally {
@@ -265,14 +265,33 @@ function renderQueue(state, member, groups) {
   const keys = friendKeys();
   const canDrag = (player) => Boolean(member) && (player.key === me.key || keys.has(player.key));
   const canJoin = Boolean(member) && groups.length === 0;
+  // Waiting in exactly one group: tapping an open spot elsewhere moves you there.
+  const moveFrom = groups.length === 1 && groups[0].status === 'waiting' ? groups[0] : null;
+  // The line is far from the top of the page, so say what went wrong right here.
+  const lineError = (message) => alertDialog('Couldn\'t do that', message);
+  const openSpot = (label, body) => h('button', { class: 'slot open', type: 'button', onclick: () => act(body, lineError) }, label);
   $('queue').replaceChildren(...queueItems(state, {
     mineKey: me.key,
     friendKeys: keys,
     isMine: (group) => groups.some((g) => g.id === group.id),
     canDragPlayer: canDrag,
-    openSlot: (group) => (canJoin
-      ? h('button', { class: 'slot open', type: 'button', onclick: () => act({ type: 'join', groupId: group.id }) }, '+ Join')
-      : null),
+    openSlot: (group) => {
+      if (canJoin) return openSpot('+ Join', { type: 'join', groupId: group.id });
+      if (moveFrom && group.id !== moveFrom.id) {
+        return openSpot('+ Move here', { type: 'movePlayer', playerKey: me.key, fromGroupId: moveFrom.id, groupId: group.id });
+      }
+      return null;
+    },
+    // ✕ on your own name leaves that group (a second tap confirms).
+    playerExtra: (player, group) => (player.key === me.key && group.status === 'waiting' ? twoTapButton({
+      id: `leave-${group.id}`,
+      label: '✕',
+      confirmLabel: 'Leave?',
+      ariaLabel: `Leave Group ${group.no}`,
+      className: 'ghost remove leave',
+      rerender,
+      onConfirm: () => act({ type: 'leave', groupId: group.id }, lineError),
+    }) : null),
   }));
   $('drag-hint').hidden = !waiting(state).some((g) => g.players.some(canDrag));
 

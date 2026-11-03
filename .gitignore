@@ -1,0 +1,6 @@
+node_modules
+.vercel
+.env*
+host-pin.txt
+dist
+.DS_Store

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Host · CMU Recreational Badminton</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#c41230">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/court-32.png">
+  <link rel="apple-touch-icon" href="/icons/court-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Fonts load without holding up the first paint; system fonts show until then. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Open+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main>
+    <header class="topbar">
+      <h1>Host</h1>
+      <div class="sync" id="sync">Connecting…</div>
+    </header>
+
+    <form class="panel" id="login">
+      <label for="pin">Host PIN</label>
+      <div class="row">
+        <input id="pin" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" required>
+        <button type="submit">Enter</button>
+      </div>
+      <div class="error" id="login-error" role="alert"></div>
+    </form>
+
+    <div id="panel" hidden>
+      <section class="panel">
+        <h2>Today</h2>
+        <div class="stack" id="today"></div>
+      </section>
+      <div class="error" id="error" role="alert"></div>
+      <section>
+        <h2>On court</h2>
+        <div class="courts" id="courts"></div>
+      </section>
+      <section>
+        <h2>In line</h2>
+        <div class="hint">Drag ⠿ on a person to move them, or on a group's title to reorder the line.</div>
+        <ol class="queue" id="queue"></ol>
+        <div id="queue-empty" class="empty-state" hidden>No one in line yet</div>
+      </section>
+      <section>
+        <h2>Finished games</h2>
+        <ol class="history" id="history"></ol>
+        <div id="history-empty" class="empty-state">No games finished yet</div>
+      </section>
+      <section class="panel">
+        <div class="row spread"><h2>Bug reports</h2><button type="button" class="ghost" id="inbox-refresh">Refresh</button></div>
+        <ul class="inbox" id="inbox"></ul>
+        <div class="empty-state" id="inbox-empty" hidden>Nothing reported.</div>
+        <div class="error" id="inbox-error" role="alert"></div>
+      </section>
+    </div>
+    <footer><a href="/">Sign-up page</a> · <a href="/kiosk">Court screen</a> · <a href="mailto:victorkw@andrew.cmu.edu">victorkw@andrew.cmu.edu</a> · <a href="https://github.com/TempestShaw" rel="noopener">GitHub: TempestShaw</a></footer>
+  </main>
+  <script type="module" src="/js/host.js"></script>
+</body>
+</html>

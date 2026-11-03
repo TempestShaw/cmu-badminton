@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CMU Recreational Badminton · Guide</title>
+<!-- Printed to docs/CMU-Badminton-Guide.pdf with `npm run manual` (headless Chrome).
+     Each .page is one Letter page; players read pages 2–7, the host pages 8–10. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Open+Sans:wght@400;600;700&display=block">
+<style>
+  @page { size: letter; margin: 0; }
+  :root {
+    --red: #c41230; --gold: #fdb515; --iron: #6d6e71; --steel: #e0e0e0; --ink: #1a1a1a; --paper: #ffffff; --tint: #f6f6f6;
+    --display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --body: 'Open Sans', Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #ddd; }
+  body { font: 400 10.5pt/1.5 var(--body); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page {
+    width: 8.5in; height: 11in; padding: 0.6in 0.65in 0.75in; position: relative; overflow: hidden;
+    background: var(--paper); page-break-after: always; break-after: page; margin: 0 auto;
+  }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+  @media screen { .page { margin: 24px auto; box-shadow: 0 2px 12px rgba(0,0,0,.15); } }
+
+  /* Running header and footer */
+  .band { position: absolute; top: 0; left: 0; right: 0; height: 0.32in; display: flex; align-items: center; padding: 0 0.65in;
+    font: 700 9pt/1 var(--display); letter-spacing: .12em; text-transform: uppercase; color: #fff; background: var(--red); }
+  .band.host { background: var(--ink); }
+  .band .who { margin-left: auto; color: var(--gold); }
+  .foot { position: absolute; bottom: 0.35in; left: 0.65in; right: 0.65in; display: flex; justify-content: space-between;
+    font-size: 8pt; color: var(--iron); border-top: 1px solid var(--steel); padding-top: 6px; }
+
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; margin: 0; line-height: 1.05; }
+  h2 { font-size: 30pt; color: var(--red); margin: 0.2in 0 0.05in; }
+  .host-page h2 { color: var(--ink); }
+  h3 { font-size: 15pt; margin: 14px 0 4px; color: var(--ink); }
+  .lede { color: var(--iron); font-size: 11pt; margin: 0 0 10px; }
+  p { margin: 0 0 8px; }
+  ol, ul { margin: 0 0 8px; padding-left: 18px; }
+  li { margin-bottom: 4px; }
+  b, strong { font-weight: 700; }
+  .btn { display: inline-block; padding: 0 6px; border-radius: 4px; background: var(--red); color: #fff; font-weight: 700; font-size: 9.5pt; white-space: nowrap; }
+  .btn.light { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px #bbb; }
+  .btn.gold { background: var(--gold); color: #000; }
+  .tip { background: #fff7e0; border-left: 4px solid var(--gold); padding: 8px 12px; border-radius: 4px; margin: 10px 0; font-size: 9.5pt; }
+  .warn { background: #fbe9ec; border-left: 4px solid var(--red); padding: 8px 12px; border-radius: 4px; margin: 10px 0; font-size: 9.5pt; }
+
+  /* Text beside phone screenshots */
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) 2.35in; gap: 0.3in; align-items: start; }
+  .split.two { grid-template-columns: 2.35in 2.35in; justify-content: center; gap: 0.35in; }
+  .shot { margin: 0; }
+  .shot img { width: 100%; display: block; border-radius: 12px; border: 1px solid #cfcfcf; }
+  .shot.crop img { max-height: 4.6in; object-fit: cover; object-position: top; }
+  .shot.crop.bottom img { object-position: bottom; }
+  .shot.crop.short img { max-height: 3.3in; }
+  .shot figcaption { font-size: 8pt; color: var(--iron); margin-top: 4px; text-align: center; }
+  .wide img { width: 100%; border-radius: 8px; border: 1px solid #cfcfcf; }
+
+  /* Cover */
+  .cover { background: var(--red); color: #fff; padding: 0; }
+  .cover .inner { position: absolute; inset: 0.8in 0.8in auto; }
+  .cover .kicker { font: 700 13pt var(--display); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+  .cover h1 { font-size: 58pt; margin: 8px 0 6px; }
+  .cover .sub { font-size: 14pt; opacity: .95; max-width: 5.6in; }
+  .cover .url { display: inline-block; margin-top: 18px; background: #fff; color: var(--red); font: 700 22pt var(--display);
+    padding: 6px 14px; border-radius: 6px; letter-spacing: .02em; }
+  .court-art { position: absolute; right: 0.8in; top: 3.3in; width: 2.1in; height: 3.6in; border: 3px solid rgba(255,255,255,.75); }
+  .court-art::before, .court-art::after { content: ""; position: absolute; left: 0; right: 0; height: 3px; background: rgba(255,255,255,.75); }
+  .court-art::before { top: 50%; }
+  .court-art::after { top: 35%; box-shadow: 0 1.08in 0 rgba(255,255,255,.75); }
+  .court-art span { position: absolute; left: 50%; width: 3px; background: rgba(255,255,255,.75); }
+  .court-art span:first-child { top: 0; height: 35%; }
+  .court-art span:last-child { bottom: 0; height: 35%; }
+  .toc { position: absolute; left: 0.8in; right: 0.8in; bottom: 0.9in; display: grid; grid-template-columns: 1fr 1fr; gap: 0.3in; }
+  .toc .box { background: rgba(255,255,255,.12); border-radius: 10px; padding: 14px 18px; }
+  .toc .box.host { background: rgba(0,0,0,.25); }
+  .toc h3 { color: var(--gold); font-size: 18pt; margin: 0 0 6px; }
+  .toc ol { margin: 0; padding-left: 0; list-style: none; font-size: 10.5pt; }
+  .toc li { display: flex; justify-content: space-between; border-bottom: 1px dotted rgba(255,255,255,.35); padding: 3px 0; margin: 0; }
+  .toc .contact { grid-column: 1 / -1; font-size: 9pt; opacity: .9; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ================================================================ 1 · cover -->
+<section class="page cover">
+  <div class="inner">
+    <div class="kicker">Queue app guide</div>
+    <h1>CMU Recreational<br>Badminton</h1>
+    <div class="sub">Sign up for the next game, see where you are in line, and get a buzz on your phone when it's your turn.</div>
+    <div class="url">cmubmt.vercel.app</div>
+  </div>
+  <div class="court-art"><span></span><span></span></div>
+  <div class="toc">
+    <div class="box">
+      <h3>Players · pages 2–7</h3>
+      <ol>
+        <li><span>Getting in</span><span>2</span></li>
+        <li><span>Joining a group</span><span>3</span></li>
+        <li><span>“It's your turn” alerts</span><span>4</span></li>
+        <li><span>Signing up friends</span><span>5</span></li>
+        <li><span>Switching and starting</span><span>6</span></li>
+        <li><span>Playing, finishing, history</span><span>7</span></li>
+      </ol>
+    </div>
+    <div class="box host">
+      <h3>Host · pages 8–10</h3>
+      <ol>
+        <li><span>Before the session</span><span>8</span></li>
+        <li><span>Running the line</span><span>9</span></li>
+        <li><span>Ending the day, reports, help</span><span>10</span></li>
+      </ol>
+    </div>
+    <div class="contact">victorkw@andrew.cmu.edu · github.com/TempestShaw</div>
+  </div>
+</section>
+
+<!-- ================================================================ 2 · getting in -->
+<section class="page">
+  <div class="band">CMU Recreational Badminton<span class="who">For players</span></div>
+  <h2>1 · Getting in</h2>
+  <p class="lede">You check in once per session with your name and today's code. The code is on the court-side screen, so you have to be at the courts.</p>
+  <div class="split two">
+    <figure class="shot crop"><img src="img/01-home-screen.jpg" alt=""><figcaption>iPhone: add to Home Screen first</figcaption></figure>
+    <figure class="shot"><img src="img/02-check-in.png" alt=""><figcaption>Check in with your name and today's code</figcaption></figure>
+  </div>
+  <h3>Steps</h3>
+  <ol>
+    <li><b>Scan the QR code</b> on the court-side screen (or open <b>cmubmt.vercel.app</b>). Scanning fills in today's code for you.</li>
+    <li><b>iPhone only:</b> the yellow box asks you to add the site to your Home Screen first. Tap <span class="btn gold">Share</span> → <span class="btn gold">Add to Home Screen</span>, then open <b>CMU Rec BMT</b> from your Home Screen and check in there. Only the Home Screen app can buzz a locked iPhone. Android phones skip this step.</li>
+    <li>Type <b>your name</b> and <b>today's code</b>, then tap <span class="btn">Join</span>.</li>
+  </ol>
+  <div class="tip"><b>Names are unique for the day.</b> If someone already uses your name, you'll be asked “Is that you?”. Tap <b>Yes</b> only if it really is you (for example a friend signed you up, or you switched phones). Otherwise pick <b>I'm someone else</b> and add a last initial, like “Alex C”.</div>
+  <div class="foot"><span>cmubmt.vercel.app</span><span>Players · 2</span></div>
+</section>
+
+<!-- ================================================================ 3 · joining -->
+<section class="page">
+  <div class="band">CMU Recreational Badminton<span class="who">For players</span></div>
+  <h2>2 · Joining a group</h2>
+  <p class="lede">Games are doubles: four people per group. Groups go on court strictly in line order.</p>
+  <div class="split two">
+    <figure class="shot crop"><img src="img/03-your-group.jpg" alt=""><figcaption>Your group card at the top</figcaption></figure>
+    <figure class="shot crop"><img src="img/04-the-line.jpg" alt=""><figcaption>The line: you in gold, friends outlined</figcaption></figure>
+  </div>
+  <h3>Three ways to join</h3>
+  <ul>
+    <li><span class="btn">Find me a group</span> puts you in the first group with room, or starts a new one.</li>
+    <li>Tap <b>+ Join</b> on an open spot in a specific group.</li>
+    <li><b>+ Start a new group</b> at the bottom of the line.</li>
+  </ul>
+  <h3>Reading the line</h3>
+  <ul>
+    <li><span class="btn gold">Up next</span> is the group whose turn is next. <span class="btn gold">Your group</span> marks yours.</li>
+    <li>Your card says how many people are still needed, or how many groups are ahead of you.</li>
+    <li>When a group is full and a court is free, it goes on automatically. A short group is never skipped by a full one behind it.</li>
+  </ul>
+  <div class="foot"><span>cmubmt.vercel.app</span><span>Players · 3</span></div>
+</section>
+
+<!-- ================================================================ 4 · alerts -->
+<section class="page">
+  <div class="band">CMU Recreational Badminton<span class="who">For players</span></div>
+  <h2>3 · “It's your turn” alerts</h2>
+  <p class="lede">Turn alerts on once and you can put your phone away: it buzzes even when locked.</p>
+  <div class="split">
+    <div>
+      <h3>Turn them on</h3>
+      <ol>
+        <li>After joining a group, tap <span class="btn">🔔 Alert me when it's our turn</span> on your group card and allow notifications.</li>
+        <li>Tap <span class="btn light">Send a test in 10 seconds</span>, lock your phone, and check the test arrives.</li>
+      </ol>
+      <h3>What you'll get</h3>
+      <ul>
+        <li><b>You're up next</b>: your group is first in line. Warm up.</li>
+        <li><b>A court is free: your group is up</b>: you're first but short of players. Grab someone and tap Start.</li>
+        <li><b>You're up! Head to Court N</b>: your game is on.</li>
+      </ul>
+      <p>With the page open you also get a full-screen yellow alert, a beep and a buzz.</p>
+      <div class="warn"><b>No alert?</b> On iPhone, alerts only work from the Home Screen app (iOS 16.4 or later). Also check that notifications are allowed for the site and that Focus / Do Not Disturb isn't on. If alerts can't work on your phone, your group card says so; keep the page open instead.</div>
+      <div class="tip">Friends you sign up get alerts only on their own phones, after they check in with the same name and turn alerts on.</div>
+    </div>
+    <figure class="shot crop"><img src="img/08-your-turn.jpg" alt=""><figcaption>The full-screen alert</figcaption></figure>
+  </div>
+  <div class="foot"><span>cmubmt.vercel.app</span><span>Players · 4</span></div>
+</section>
+
+<!-- ================================================================ 5 · friends -->
+<section class="page">
+  <div class="band">CMU Recreational Badminton<span class="who">For players</span></div>
+  <h2>4 · Signing up friends</h2>
+  <p class="lede">Just came off court with friends? Put the whole group down in one go.</p>
+  <div class="split">
+    <div>
+      <ol>
+        <li>Open <b>Signing up friends too?</b></li>
+        <li>Keep <b>Include me</b> ticked if you're playing too, and type one name per box (up to four people in all). Typing a comma jumps to the next box; names of people already checked in are suggested.</li>
+        <li>Pick a group (<b>Auto</b> finds one with room for everyone) and tap <span class="btn">Sign up</span>.</li>
+      </ol>
+      <h3>After signing them up</h3>
+      <ul>
+        <li><b>Friends you signed up</b> lists where each one is. Use <span class="btn light">Move</span> to put a friend in another group, or <span class="btn light">Take out</span> to remove them.</li>
+        <li>A friend can take over their own spot: they check in on their own phone with the <b>same name</b> and answer <b>Yes</b> to “Is that you?”.</li>
+      </ul>
+      <h3>Fair-play limits</h3>
+      <ul>
+        <li>Everyone can hold <b>at most two spots</b> at once (playing + one in line). A third sign-up is refused.</li>
+        <li>One phone can hold spots for up to <b>three friends</b> who haven't checked in themselves.</li>
+      </ul>
+    </div>
+    <figure class="shot"><img src="img/05-friends.png" alt=""><figcaption>One box per friend</figcaption></figure>
+  </div>
+  <div class="foot"><span>cmubmt.vercel.app</span><span>Players · 5</span></div>
+</section>
+
+<!-- ================================================================ 6 · switching and starting -->
+<section class="page">
+  <div class="band">CMU Recreational Badminton<span class="who">For players</span></div>
+  <h2>5 · Switching and starting</h2>
+  <p class="lede">Change groups with a tap, and start a short game when it's your turn.</p>
+  <div class="split two">
+    <figure class="shot crop"><img src="img/06-switch-group.jpg" alt=""><figcaption>Switch group: tap where to go</figcaption></figure>
+    <figure class="shot"><img src="img/07-start-now.png" alt=""><figcaption>Start now, when it's your turn</figcaption></figure>
+  </div>
+  <h3>Switching groups</h3>
+  <p>Tap <span class="btn light">Switch group</span> on your card and pick a group with room, or <b>New group at the back</b>. You can also drag the <b>⠿</b> handle next to your name (or a friend's) onto another group.</p>
+  <h3>Starting short</h3>
+  <p>If your group is <b>first in line</b> and a court is free but you're not four yet, tap <span class="btn">Start now</span> twice and grab whoever is around to fill in. The app picks the court for you. Groups further back can't start early; they wait their turn.</p>
+  <div class="foot"><span>cmubmt.vercel.app</span><span>Players · 6</span></div>
+</section>
+
+<!-- ================================================================ 7 · playing and history -->
+<section class="page">
+  <div class="band">CMU Recreational Badminton<span class="who">For players</span></div>
+  <h2>6 · Playing, finishing, history</h2>
+  <p class="lede">Finishing on time keeps the line moving for everyone.</p>
+  <div class="split two">
+    <figure class="shot"><img src="img/09-playing.png" alt=""><figcaption>Your card while you play</figcaption></figure>
+    <figure class="shot crop"><img src="img/11-history.jpg" alt=""><figcaption>Finished games, newest first</figcaption></figure>
+  </div>
+  <h3>When your game ends</h3>
+  <p>Tap <span class="btn">We're done</span> twice on your card, or <b>Done playing</b> under your court on the court-side screen. The next group is called right away.</p>
+  <h3>No phone? Use the court-side screen</h3>
+  <p>The <b>Sign up here</b> box on the court-side screen takes up to four names at once. Anyone there can also drag people between groups.</p>
+  <h3>Other things on the page</h3>
+  <ul>
+    <li><b>Finished games</b> lists every game today: who played, on which court, when it ended.</li>
+    <li><b>Report a problem</b> (bottom of the page) goes straight to the host.</li>
+    <li><b>Not you?</b> at the top switches who is using this phone.</li>
+  </ul>
+  <div class="foot"><span>victorkw@andrew.cmu.edu · github.com/TempestShaw</span><span>Players · 7</span></div>
+</section>
+
+<!-- ================================================================ 8 · host: before -->
+<section class="page host-page">
+  <div class="band host">CMU Recreational Badminton<span class="who">For the host</span></div>
+  <h2>7 · Before the session</h2>
+  <p class="lede">About two minutes of setup at the courts.</p>
+  <div class="split">
+    <div>
+      <h3>1. Start today's session</h3>
+      <p>On your phone, open <b>cmubmt.vercel.app/host</b>, enter the host password and tap <span class="btn">Start today's session</span>. Today's code appears in big red letters.</p>
+      <h3>2. Set up the court-side screen</h3>
+      <p>On the computer by the courts, open <b>cmubmt.vercel.app/kiosk</b> and unlock it once with the host password. It then shows today's code, a QR code for people to scan, the courts and the line. Tap <b>Turn on announcements</b> to have it read out who's up.</p>
+      <h3>3. Tell people</h3>
+      <p>“Scan the QR code on the screen to sign up. iPhone users, add it to your Home Screen first so it can buzz you.”</p>
+      <h3>Today panel</h3>
+      <ul>
+        <li><span class="btn light">New code</span>: if the code was shared outside the hall. Everyone already checked in stays.</li>
+        <li><span class="btn light">Start a new day</span>: clears everything and makes a new code.</li>
+        <li><span class="btn" style="background:#941120">End today</span>: see page 10.</li>
+      </ul>
+      <div class="tip">Buttons that are hard to undo need a <b>second tap</b> within four seconds.</div>
+    </div>
+    <figure class="shot crop"><img src="img/13-host-today.jpg" alt=""><figcaption>The host page</figcaption></figure>
+  </div>
+  <div class="foot"><span>cmubmt.vercel.app/host</span><span>Host · 8</span></div>
+</section>
+
+<!-- ================================================================ 9 · host: running the line -->
+<section class="page host-page">
+  <div class="band host">CMU Recreational Badminton<span class="who">For the host</span></div>
+  <h2>8 · Running the line</h2>
+  <p class="lede">The line runs itself. You step in for exceptions.</p>
+  <figure class="wide"><img src="img/12-court-screen.png" alt=""><figcaption class="shot" style="font-size:8pt;color:#6d6e71;text-align:center">The court-side screen: courts, the line, today's code and walk-up sign-up</figcaption></figure>
+  <div class="split" style="margin-top:12px">
+    <div>
+      <h3>Courts</h3>
+      <p><b>End game</b> under a court frees it; the next full group is called automatically.</p>
+      <h3>The line</h3>
+      <ul>
+        <li><b>Drag ⠿ on a person</b> to move them; <b>drag ⠿ on a group's title</b> (or use ↑ / ↓) to reorder groups.</li>
+        <li><b>Start now</b> starts any group on a free court, even out of order (e.g. the first group isn't here yet).</li>
+        <li><b>✕</b> removes one person; <b>Remove group</b> calls a whole group off (it stays in the history).</li>
+      </ul>
+      <p>Players can only move themselves and friends they signed up, and only the first group can start early from a phone. The court-side screen can do everything here except reorder groups and remove single people.</p>
+    </div>
+    <figure class="shot crop short"><img src="img/14-host-line.jpg" alt=""><figcaption>Line tools: ⠿ drag, ✕ remove, ↑ ↓, Remove group</figcaption></figure>
+  </div>
+  <div class="foot"><span>cmubmt.vercel.app/host</span><span>Host · 9</span></div>
+</section>
+
+<!-- ================================================================ 10 · host: ending and help -->
+<section class="page host-page">
+  <div class="band host">CMU Recreational Badminton<span class="who">For the host</span></div>
+  <h2>9 · Ending the day, reports, help</h2>
+  <div class="split">
+    <div>
+      <h3>End the day</h3>
+      <p>Tap <span class="btn" style="background:#941120">End today</span> twice. Courts, line and check-ins clear and phones show “No session is running right now”, so nobody sees yesterday's line tomorrow. Forgot? A session ends on its own <b>18 hours</b> after it started.</p>
+      <h3>Bug reports</h3>
+      <p>Anything sent with <b>Report a problem</b> shows up under <b>Bug reports</b>, with the sender's name, page and phone type. Delete them once handled.</p>
+      <h3>Quick fixes</h3>
+      <ul>
+        <li><b>Someone isn't getting alerts</b>: iPhone must use the Home Screen app; notifications must be allowed; ask them to tap “Send a test in 10 seconds”.</li>
+        <li><b>Court screen says it's locked</b>: unlock it again with the host password (needed after the password changes).</li>
+        <li><b>A group is on a court but already left</b>: tap End game / Done playing for that court.</li>
+        <li><b>Wrong person took a name</b>: remove them with ✕ and have the right person check in again.</li>
+        <li><b>Someone can't sign up a third time</b>: by design (two spots max). It frees up once one of their games ends.</li>
+      </ul>
+      <h3>Good to know</h3>
+      <ul>
+        <li>Runs on free tiers (Vercel + Upstash); comfortable for about ten sessions a month.</li>
+        <li>Built and maintained by Victor: <b>victorkw@andrew.cmu.edu</b> · <b>github.com/TempestShaw</b>.</li>
+      </ul>
+    </div>
+    <figure class="shot crop bottom"><img src="img/15-host-reports.jpg" alt=""><figcaption>Bug reports on the host page</figcaption></figure>
+  </div>
+  <div class="foot"><span>victorkw@andrew.cmu.edu · github.com/TempestShaw</span><span>Host · 10</span></div>
+</section>
+
+</body>
+</html>

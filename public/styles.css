@@ -1,0 +1,351 @@
+/* CMU Recreational Badminton
+   One narrow column on phones; the court-side screen spreads the courts across
+   the width with the line beneath. Courts are drawn as courts.
+   Colors follow the CMU palette: Carnegie Red courts and buttons, Gold Thread
+   for "you" and "your turn", Iron Gray and Steel Gray for neutrals. */
+
+/* ------------------------------------------------------------ theme */
+
+:root {
+  --bg: #f4f4f4;
+  --surface: #ffffff;
+  --ink: #111111;
+  --muted: #6d6e71;        /* Iron Gray */
+  --line: #e0e0e0;         /* Steel Gray */
+  --court: #c41230;        /* Carnegie Red */
+  --court-ink: #ffffff;
+  --court-line: rgba(255, 255, 255, 0.55);
+  --accent: #fdb515;       /* Gold Thread */
+  --accent-ink: #000000;
+  --danger: #941120;
+  --ok: #009647;
+  --emphasis: #c41230;     /* red text that stays readable in dark mode too */
+  --overlay: rgba(0, 0, 0, 0.6);
+
+  --font-display: 'Barlow Condensed', 'Arial Narrow', 'PingFang TC', sans-serif;
+  --font-body: 'Open Sans', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121212; --surface: #1e1e1f; --ink: #f2f2f2; --muted: #a7a8aa; --line: #343537;
+    --court: #c41230; --court-ink: #ffffff; --court-line: rgba(255, 255, 255, 0.45);
+    --accent: #fdb515; --accent-ink: #000000; --danger: #ef3a47; --ok: #3dbb6e; --overlay: rgba(0, 0, 0, 0.7);
+    --emphasis: #ff6b7d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121212; --surface: #1e1e1f; --ink: #f2f2f2; --muted: #a7a8aa; --line: #343537;
+  --court: #c41230; --court-ink: #ffffff; --court-line: rgba(255, 255, 255, 0.45);
+  --accent: #fdb515; --accent-ink: #000000; --danger: #ef3a47; --ok: #3dbb6e; --overlay: rgba(0, 0, 0, 0.7);
+  --emphasis: #ff6b7d;
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------ base */
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.5 var(--font-body);
+  padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px))
+    calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+main { max-width: 640px; margin: 0 auto; display: grid; gap: 20px; }
+h1, h2 { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.01em; margin: 0; text-wrap: balance; }
+h1 { font-size: 28px; }
+h2 { font-size: 20px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+h2.spaced { margin-top: 24px; }
+.num { font-family: var(--font-display); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.hl { color: var(--emphasis); font-weight: 700; }
+/* Looks like the thing to tap, e.g. "Share" in the home-screen steps */
+.key { display: inline-block; background: var(--accent); color: var(--accent-ink); font-weight: 700; padding: 0 6px; border-radius: 5px; }
+
+/* ------------------------------------------------------------ layout pieces */
+
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row > input { flex: 1 1 160px; }
+.row.spread { justify-content: space-between; }
+.row.actions { justify-content: flex-end; }
+.stack { display: grid; gap: 10px; }
+.stack-lg, #panel { display: grid; gap: 20px; }
+.panel { background: var(--surface); border-radius: var(--radius); padding: 16px; display: grid; gap: 12px; }
+.notice { font-size: 14px; color: var(--muted); }
+.hint { font-size: 13px; color: var(--muted); margin: 4px 0 10px; }
+.error { color: var(--danger); font-size: 14px; min-height: 1.5em; }
+.empty-state { text-align: center; padding: 24px 16px; color: var(--muted); }
+.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14px; }
+
+/* Empty areas and error lines would leave double gaps in the page grid */
+#me:empty, #friends:empty, #push:empty, #install:empty,
+.stack-lg > .error:empty, #panel > .error:empty { display: none; }
+
+/* ------------------------------------------------------------ controls */
+
+button, input, select, textarea { font: inherit; color: inherit; }
+button {
+  border: 0; border-radius: var(--radius); padding: 10px 16px; cursor: pointer;
+  background: var(--court); color: var(--court-ink); font-weight: 700;
+}
+button.secondary { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+button.danger { background: var(--danger); color: #fff; }
+button.ghost { background: transparent; color: var(--muted); padding: 6px 10px; min-height: 40px; min-width: 40px; font-weight: 500; }
+button.link {
+  background: none; padding: 0; min-height: 0; color: inherit; font-weight: 500; text-decoration: underline; cursor: pointer;
+}
+/* Armed two-tap buttons ("Tap again to …"); must come after the variants above */
+button.confirm { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
+button:disabled { opacity: 0.5; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 2px;
+}
+input, select, textarea {
+  width: 100%; min-width: 0; padding: 10px 12px; border-radius: var(--radius);
+  border: 1.5px solid var(--line); background: var(--surface);
+}
+textarea { resize: vertical; min-height: 88px; line-height: 1.4; }
+input[type="checkbox"] { width: 20px; height: 20px; padding: 0; accent-color: var(--court); flex: none; }
+.check { display: flex; align-items: center; gap: 10px; min-height: 40px; }
+
+/* ------------------------------------------------------------ top bar */
+
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 16px; }
+/* The full name is long; let it shrink on phones rather than crowd the status */
+.topbar h1 { font-size: clamp(22px, 6.4vw, 28px); line-height: 1.1; }
+.sync { flex: none; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.sync::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.sync.stale::before { background: var(--accent); }
+.sync.offline::before { background: var(--danger); }
+
+/* ------------------------------------------------------------ check-in */
+
+.whoami { font-size: 14px; color: var(--muted); }
+.whoami strong { color: var(--ink); }
+.code-input { text-transform: uppercase; letter-spacing: 0.2em; font-family: var(--font-display); font-size: 22px; }
+.code-input::placeholder { text-transform: none; letter-spacing: normal; font-family: var(--font-body); font-size: 16px; }
+/* iPhones: add to Home Screen before checking in, since only that app gets alerts */
+.home-first { border: 2px solid var(--accent); }
+.home-first h2 { color: var(--emphasis); text-transform: none; letter-spacing: 0; font-size: 24px; line-height: 1.15; }
+.home-first .steps { font-size: 15px; gap: 8px; }
+.install { grid-template-columns: 48px minmax(0, 1fr); align-items: center; }
+.install img { border-radius: 11px; }
+.install .row { grid-column: 1 / -1; }
+
+/* ------------------------------------------------------------ your group */
+
+.me { background: var(--surface); border-radius: var(--radius); padding: 18px; display: grid; gap: 10px; box-shadow: inset 0 0 0 2px var(--line); }
+.me .headline { font-family: var(--font-display); font-size: 40px; line-height: 1; font-weight: 700; }
+.me .sub { font-size: 15px; }
+.me.playing { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
+.me.playing .muted { color: inherit; opacity: 0.75; }
+.me.playing button { background: var(--accent-ink); color: var(--accent); }
+.me.playing button.confirm { background: var(--court); color: #fff; }
+button.alert-me { width: 100%; background: var(--court); color: #fff; }
+.alert-off { font-size: 13px; color: var(--danger); }
+
+/* ------------------------------------------------------------ friends */
+
+.together summary, .history-panel summary {
+  cursor: pointer; font-weight: 700; min-height: 28px; display: flex; align-items: center; gap: 8px;
+}
+.together summary { list-style: none; }
+.together summary::-webkit-details-marker { display: none; }
+.together summary::before { content: "＋"; color: var(--court); font-weight: 700; }
+.together[open] summary::before { content: "－"; }
+/* One box per name */
+.name-boxes { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.name-boxes legend { padding: 0; margin-bottom: 8px; }
+.friend-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.friend-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.friend-row .name { font-weight: 600; }
+.friend-row > div:first-child { flex: 1; min-width: 0; }
+.friend-row .row { flex: none; flex-wrap: nowrap; gap: 0; }
+
+/* ------------------------------------------------------------ courts */
+
+.courts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.court {
+  position: relative; background: var(--court); color: var(--court-ink); border-radius: 6px;
+  padding: 12px 12px 10px; display: grid; gap: 6px; align-content: start; min-height: 120px; overflow: hidden;
+}
+/* Badminton court markings: outer line, doubles sidelines, net, short service lines */
+.court::before {
+  content: ""; position: absolute; inset: 6px; pointer-events: none;
+  border: 1.5px solid var(--court-line);
+  background:
+    linear-gradient(var(--court-line), var(--court-line)) 50% 0 / 1.5px 100% no-repeat,
+    linear-gradient(var(--court-line), var(--court-line)) 0 7% / 100% 1.5px no-repeat,
+    linear-gradient(var(--court-line), var(--court-line)) 0 93% / 100% 1.5px no-repeat,
+    linear-gradient(var(--court-line), var(--court-line)) 35% 0 / 1.5px 100% no-repeat,
+    linear-gradient(var(--court-line), var(--court-line)) 65% 0 / 1.5px 100% no-repeat;
+  opacity: 0.6;
+}
+.court > * { position: relative; }
+.court .label { font-family: var(--font-display); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; }
+.court .group { font-family: var(--font-display); font-size: 26px; font-weight: 700; line-height: 1; }
+.court .names { font-size: 13px; line-height: 1.35; overflow-wrap: anywhere; }
+.court.empty { background: transparent; color: var(--muted); border: 1.5px dashed var(--line); }
+.court.empty::before { border-color: var(--line); opacity: 0.4; background: none; }
+.court.mine { box-shadow: 0 0 0 3px var(--accent); }
+/* Buttons on a red court are white; armed ones turn gold */
+.court button.secondary {
+  margin-top: auto; padding: 8px 6px; font-size: 14px; white-space: nowrap;
+  background: var(--court-ink); color: var(--court); box-shadow: none;
+}
+.court button.confirm { background: var(--accent); color: var(--accent-ink); }
+
+/* ------------------------------------------------------------ the line */
+
+.queue { display: grid; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.qgroup { background: var(--surface); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 10px; }
+.qgroup.mine { box-shadow: inset 0 0 0 2px var(--accent); }
+.qhead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.qhead .title { font-family: var(--font-display); font-size: 22px; font-weight: 700; flex: 1; min-width: 0; }
+.badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--bg); color: var(--muted); white-space: nowrap; }
+.badge.next { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.slot {
+  border-radius: 8px; padding: 8px 10px; background: var(--bg); min-height: 40px;
+  display: flex; align-items: center; justify-content: space-between; gap: 6px; overflow-wrap: anywhere;
+}
+.slot .name { flex: 1; min-width: 0; }
+.slot .remove { margin: -8px -8px -8px 0; }
+.slot.open { background: transparent; border: 1.5px dashed var(--line); color: var(--muted); }
+.slot.you { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.slot.friend { box-shadow: inset 0 0 0 2px var(--accent); font-weight: 600; }
+button.slot { font-weight: 500; text-align: left; }
+button.slot.open:hover { color: var(--court); border-color: var(--court); }
+.new-group { width: 100%; padding: 14px; }
+.group-actions { gap: 6px; }
+.group-actions button { padding: 8px 12px; font-size: 14px; }
+
+/* ------------------------------------------------------------ drag and drop (see js/dnd.js) */
+
+.grip {
+  display: inline-grid; place-items: center; flex: none; width: 36px; height: 36px; margin: -8px 0 -8px -8px;
+  border-radius: 6px; color: var(--muted); font-size: 20px; line-height: 1; cursor: grab;
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.grip:hover { background: var(--line); }
+.slot.you .grip { color: inherit; opacity: 0.7; }
+body.dragging, body.dragging * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
+.drag-ghost {
+  position: fixed; left: 0; top: 0; z-index: 30; margin: 0; pointer-events: none;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28); opacity: 0.95;
+}
+.drag-source { opacity: 0.35; }
+.qgroup.drop-target { box-shadow: inset 0 0 0 3px var(--court); }
+.qgroup.insert-before { box-shadow: 0 -6px 0 -2px var(--court); }
+.qgroup.insert-after { box-shadow: 0 6px 0 -2px var(--court); }
+/* Full groups can't take anyone, so they dim while a person is being dragged */
+body.dragging-player .qgroup[data-open="0"]:not(.drag-origin) { opacity: 0.45; }
+.dropzone {
+  display: none; list-style: none; border: 2px dashed var(--line); border-radius: var(--radius);
+  padding: 18px; text-align: center; color: var(--muted);
+}
+body.dragging-player .dropzone { display: block; }
+.dropzone.drop-target { border-color: var(--court); color: var(--court); }
+
+/* ------------------------------------------------------------ finished games */
+
+.history { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.history-item { border-radius: var(--radius); padding: 10px 12px; background: var(--surface); display: grid; gap: 4px; }
+.history-panel .history-item { background: var(--bg); }
+.history-item .title { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+.history-item .names { font-size: 14px; overflow-wrap: anywhere; }
+.history-item.mine { box-shadow: inset 0 0 0 2px var(--accent); }
+.history-item.removed { opacity: 0.7; }
+
+/* ------------------------------------------------------------ dialogs and the "you're up" alert */
+
+dialog.sheet {
+  border: 0; border-radius: 14px; padding: 20px; width: min(440px, calc(100vw - 32px));
+  background: var(--surface); color: var(--ink); display: grid; gap: 12px;
+}
+dialog.sheet:not([open]) { display: none; }
+dialog.sheet::backdrop { background: var(--overlay); }
+dialog.sheet h2 { color: var(--ink); text-transform: none; letter-spacing: 0; font-size: 24px; }
+dialog.sheet p { margin: 0; }
+.pick-list { display: grid; gap: 8px; max-height: 55vh; overflow-y: auto; }
+button.pick {
+  display: grid; gap: 2px; text-align: left; width: 100%; padding: 12px 14px;
+  background: var(--bg); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line);
+}
+button.pick:hover { box-shadow: inset 0 0 0 2px var(--court); }
+.pick-label { font-weight: 700; }
+.pick-detail { font-size: 13px; font-weight: 400; color: var(--muted); overflow-wrap: anywhere; }
+
+.alert {
+  position: fixed; inset: 0; z-index: 20; background: var(--accent); color: var(--accent-ink);
+  display: grid; place-content: center; gap: 16px; text-align: center;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px))
+    calc(24px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
+  animation: flash 0.9s ease-in-out 4;
+}
+.alert .big { font-family: var(--font-display); font-size: clamp(56px, 18vw, 120px); font-weight: 700; line-height: 0.95; }
+.alert button { background: var(--accent-ink); color: var(--accent); justify-self: center; padding: 14px 28px; }
+@keyframes flash { 50% { filter: brightness(1.25); } }
+
+/* ------------------------------------------------------------ host */
+
+.day-code { font-family: var(--font-display); font-size: 56px; font-weight: 700; letter-spacing: 0.12em; line-height: 1; color: var(--court); }
+.inbox { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.inbox-item { border: 1.5px solid var(--line); border-radius: var(--radius); padding: 12px; display: grid; gap: 6px; }
+.inbox-message { white-space: pre-wrap; overflow-wrap: anywhere; }
+.inbox-item .ua { font-size: 11px; overflow-wrap: anywhere; }
+
+/* ------------------------------------------------------------ court-side screen */
+
+body.kiosk main { max-width: 1400px; }
+body.kiosk .courts { gap: 16px; }
+body.kiosk .court { min-height: 260px; padding: 22px; gap: 10px; border-radius: 10px; }
+body.kiosk .court .label { font-size: 22px; }
+body.kiosk .court .group { font-size: 64px; }
+body.kiosk .court .names { font-size: 22px; }
+body.kiosk .court button { margin-top: auto; background: var(--court-ink); color: var(--court); font-size: 20px; padding: 14px; }
+body.kiosk .court button.confirm { background: var(--accent); color: var(--accent-ink); }
+body.kiosk .queue { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+body.kiosk .history { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+body.kiosk .day-code { font-size: 72px; }
+.kiosk-lower { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.kiosk-side { display: grid; gap: 16px; }
+.qr { background: #fff; padding: 12px; border-radius: var(--radius); justify-self: start; line-height: 0; }
+.qr img, .qr canvas, .qr svg { width: 180px; height: 180px; }
+
+/* ------------------------------------------------------------ footer */
+
+footer { text-align: center; font-size: 13px; color: var(--muted); }
+footer a { color: inherit; }
+footer button.link { font-size: 13px; color: var(--muted); }
+
+/* ------------------------------------------------------------ smaller screens and motion */
+
+@media (max-width: 720px) {
+  .kiosk-lower { grid-template-columns: minmax(0, 1fr); }
+  body.kiosk .court .group { font-size: 40px; }
+  body.kiosk .court { min-height: 180px; padding: 14px; }
+}
+@media (max-width: 560px) {
+  body.kiosk .court { min-height: 150px; padding: 12px; gap: 6px; }
+  body.kiosk .court .label { font-size: 15px; }
+  body.kiosk .court .group { font-size: 24px; white-space: nowrap; }
+  body.kiosk .court .names { font-size: 14px; }
+  body.kiosk .court button { font-size: 15px; padding: 10px 6px; }
+  body.kiosk .topbar { flex-wrap: wrap; }
+}
+@media (max-width: 420px) {
+  .courts { gap: 6px; }
+  .court { padding: 10px 8px 8px; }
+  .court .group { font-size: 22px; }
+  .slots { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .alert { animation: none; }
+}

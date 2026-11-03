@@ -1,0 +1,17 @@
+{
+  "id": "/",
+  "name": "CMU Recreational Badminton",
+  "short_name": "CMU Rec BMT",
+  "description": "Sign up for the next game and get a notification when it's your turn.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#c41230",
+  "theme_color": "#c41230",
+  "icons": [
+    { "src": "/icons/court-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/court-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/court-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Court Screen · CMU Recreational Badminton</title>
+  <meta name="theme-color" content="#c41230">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/court-32.png">
+  <link rel="apple-touch-icon" href="/icons/court-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Fonts load without holding up the first paint; system fonts show until then. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Open+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="kiosk">
+  <main>
+    <header class="topbar">
+      <h1>CMU Recreational Badminton</h1>
+      <div class="row">
+        <button type="button" class="secondary" id="voice">Turn on announcements</button>
+        <div class="sync" id="sync">Connecting…</div>
+      </div>
+    </header>
+
+    <form class="panel" id="unlock" hidden>
+      <h2>Unlock this court screen</h2>
+      <div class="notice">Enter the host password once. This computer then shows today's code and can sign people up, start and end games.</div>
+      <label for="unlock-pin">Host password</label>
+      <div class="row">
+        <input id="unlock-pin" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" required>
+        <button type="submit">Unlock</button>
+      </div>
+      <div class="error" id="unlock-error" role="alert"></div>
+    </form>
+
+    <div class="stack-lg" id="board" hidden>
+      <div class="courts" id="courts"></div>
+      <div class="error" id="error" role="alert"></div>
+
+      <div class="kiosk-lower">
+        <section>
+          <h2>In line</h2>
+          <div class="hint">Groups go in order. Short of players? Tap Start and grab someone. Drag ⠿ to move someone.</div>
+          <ol class="queue" id="queue"></ol>
+          <div id="queue-empty" class="empty-state" hidden>No one in line yet</div>
+          <h2 class="spaced">Finished games</h2>
+          <ol class="history" id="history"></ol>
+          <div id="history-empty" class="empty-state">No games finished yet</div>
+        </section>
+
+        <aside class="kiosk-side">
+          <section class="panel">
+            <h2>Today's code</h2>
+            <div class="day-code num" id="day-code">—</div>
+            <div class="notice" id="no-session-note" hidden>No session yet. Start today's session on the host page.</div>
+            <div class="qr" id="qr"></div>
+            <div class="small muted" id="site-url"></div>
+          </section>
+          <form class="panel" id="walkup">
+            <h2>Sign up here</h2>
+            <div class="notice">Just came off court? Write down the next game here. Up to 4 names go in together.</div>
+            <fieldset class="name-boxes" id="walkup-names">
+              <legend>Names</legend>
+              <input maxlength="20" autocomplete="off" autocapitalize="words" list="roster-names" placeholder="Name 1" aria-label="Name 1">
+              <input maxlength="20" autocomplete="off" autocapitalize="words" list="roster-names" placeholder="Name 2" aria-label="Name 2">
+              <input maxlength="20" autocomplete="off" autocapitalize="words" list="roster-names" placeholder="Name 3" aria-label="Name 3">
+              <input maxlength="20" autocomplete="off" autocapitalize="words" list="roster-names" placeholder="Name 4" aria-label="Name 4">
+            </fieldset>
+            <datalist id="roster-names"></datalist>
+            <label for="walkup-group">Group</label>
+            <select id="walkup-group"></select>
+            <button type="submit" id="walkup-submit">Sign up</button>
+            <div class="error" id="walkup-error" role="alert"></div>
+          </form>
+        </aside>
+      </div>
+    </div>
+    <footer><a href="/">Sign-up page</a> · <a href="/host">Host</a> · <button type="button" class="link" id="report">Report a problem</button> · <a href="mailto:victorkw@andrew.cmu.edu">victorkw@andrew.cmu.edu</a> · <a href="https://github.com/TempestShaw" rel="noopener">GitHub: TempestShaw</a></footer>
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script type="module" src="/js/kiosk.js"></script>
+</body>
+</html>

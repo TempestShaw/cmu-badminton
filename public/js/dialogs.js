@@ -50,19 +50,22 @@ export function pickDialog({ title, body, options }) {
 }
 
 /**
- * Asks for one line of text, e.g. a corrected name.
+ * Asks for one line of text, e.g. a corrected name, or (type 'password') the host password.
  * @returns {Promise<string|null>} the text, or null if cancelled
  */
-export function promptDialog({ title, label, value = '', confirmLabel = 'Save', maxlength = 20 }) {
+export function promptDialog({
+  title, label, note, value = '', confirmLabel = 'Save', confirmKind = '', maxlength = 20, type = 'text',
+}) {
   return new Promise((resolve) => {
     let answer = null;
-    const input = h('input', { maxlength: String(maxlength), autocomplete: 'off' });
+    const input = h('input', { type, maxlength: String(maxlength), autocomplete: 'off' });
     input.value = value;
     const form = h('form', { class: 'stack', method: 'dialog' },
+      note ? h('p', { class: 'notice', text: note }) : null,
       h('label', { text: label }), input,
       h('div', { class: 'row actions' },
         h('button', { type: 'button', class: 'secondary', onclick: () => dialog.close() }, 'Cancel'),
-        h('button', { type: 'submit' }, confirmLabel)));
+        h('button', { type: 'submit', class: confirmKind }, confirmLabel)));
     const dialog = h('dialog', { class: 'sheet' }, h('h2', { text: title }), form);
     form.addEventListener('submit', (event) => {
       event.preventDefault();

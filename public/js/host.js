@@ -82,13 +82,25 @@ function renderToday(state) {
         id: 'new-day', label: 'Start a new day', confirmLabel: 'Tap again: clear everything', className: 'secondary', rerender,
         onConfirm: () => act({ type: 'startDay' }),
       }),
-      twoTapButton({
-        id: 'end-day', label: 'End today', confirmLabel: 'Tap again to end the day', className: 'danger', rerender,
-        onConfirm: () => act({ type: 'endDay' }),
-      }),
+      h('button', { type: 'button', class: 'danger', onclick: endDay }, 'End today'),
       undoDayButton()),
     h('div', { class: 'notice', text: 'New code: when the code got shared outside the hall; everyone checked in stays. Start a new day: clears everything and makes a new code. End today: clears everything and closes sign-ups until the next session. A day also ends on its own 18 hours after it started.' }),
   ].filter(Boolean));
+}
+
+// Clearing the day for everyone takes the password again, so nobody can do it
+// from a host page left open on a shared computer.
+async function endDay() {
+  const confirmPin = await promptDialog({
+    title: 'End today?',
+    note: 'Courts, the line and check-ins clear for everyone. You can undo it within 30 minutes.',
+    label: 'Host password',
+    type: 'password',
+    maxlength: 64,
+    confirmLabel: 'End today',
+    confirmKind: 'danger',
+  });
+  if (confirmPin) await act({ type: 'endDay', confirmPin });
 }
 
 function groupControls(state, group, index, count) {

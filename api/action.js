@@ -30,6 +30,8 @@ export const POST = handle(async (request) => {
   const hostPin = request.headers.get('x-host-pin');
   await guard(store, ip, body.type);
   await guardHostPin(store, ip, hostPin);
+  // Ending the day asks for the password again; a wrong one counts as a miss too.
+  if (body.type === 'endDay') await guardHostPin(store, ip, typeof body.confirmPin === 'string' ? body.confirmPin : '');
   const { state, effects, result } = await runAction(store, body, {
     hostPin,
     kioskToken: request.headers.get('x-kiosk-token'),

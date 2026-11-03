@@ -85,6 +85,7 @@ phones ──poll /api/state (CDN-cached ~2 s)──▶ Vercel functions ──�
 | Path | What's there |
 | --- | --- |
 | `api/` | Vercel functions: `state` (read), `action` (every write), `realtime` (live-push token), `subscribe`, `pushtest`, `report` |
+| `shared/rules.js` | Rules both the server and the pages use (group size, the line, who may start early, bubble ids) |
 | `lib/queue.js` | Queue rules: groups, courts, moving people, who to notify |
 | `lib/session.js` | Today's code, check-in, unique names, signing up friends |
 | `lib/actions.js` | Permissions per action and the compare-and-set retry loop |

@@ -38,7 +38,9 @@ async function serveStatic(res, pathname) {
   const clean = normalize(pathname === '/' ? '/index.html' : pathname).replace(/^(\.\.[/\\])+/, '');
   const withExt = extname(clean) ? clean : `${clean}.html`;
   try {
-    const file = await readFile(join(ROOT, 'public', withExt));
+    // Rules shared with the server (shared/rules.js) are imported by the pages too.
+    const fromShared = withExt.startsWith('/shared/') && extname(withExt) === '.js';
+    const file = await readFile(fromShared ? join(ROOT, withExt) : join(ROOT, 'public', withExt));
     send(res, 200, TYPES[extname(withExt)] ?? 'application/octet-stream', file);
   } catch {
     send(res, 404, 'text/plain', 'Not found');

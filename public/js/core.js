@@ -1,5 +1,8 @@
 // Shared by every page: talking to the API, polling, identity and a tiny
 // element builder. Names from other people only ever reach the DOM as text.
+import {
+  GROUP_SIZE, isActive, waitingGroups, startableGroups,
+} from '../../shared/rules.js';
 
 const POLL_MS = 3000;
 // A screen left open with nothing happening (say, overnight) slows right down.
@@ -259,13 +262,11 @@ export async function keyOf(id) {
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
 }
 
-export const isActive = (g) => g.status === 'waiting' || g.status === 'playing';
-export const waiting = (state) => state.groups.filter((g) => g.status === 'waiting');
-/** Mirrors the server: the first groups in line, one per free court, may start early. */
-export const startable = (state) => waiting(state).filter((g) => g.players.length > 0)
-  .slice(0, state.courts.filter((c) => !c.groupId).length);
+// The same rules the server uses (shared/rules.js), under the names pages use.
+export { GROUP_SIZE, isActive };
+export const waiting = waitingGroups;
+export const startable = startableGroups;
 export const groupById = (state, id) => state.groups.find((g) => g.id === id) ?? null;
-export const GROUP_SIZE = 4;
 
 export function setPlayerId(id) {
   memoryId = id;

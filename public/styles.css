@@ -379,6 +379,7 @@ body.kiosk .day-code { font-size: 54px; }
 .edit-picked { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 30px; }
 .chip { background: var(--bg); border-radius: 999px; padding: 4px 12px; font-weight: 600; }
 .edit-note { font-size: 13px; color: var(--muted); }
+button.ghost.danger-text { color: var(--danger); }
 .edit-note:empty { display: none; }
 
 /* ------------------------------------------------------------ footer */

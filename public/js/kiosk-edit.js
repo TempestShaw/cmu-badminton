@@ -1,13 +1,14 @@
 // Court screen "Edit": tap up to four people in the line, then move them all
-// together to a group with room or a new group at the back. The server moves
-// all of them or none (movePlayers in lib/queue.js), so two people rearranging
-// at once never leave half a move. The line keeps updating while people are
+// together to a group with room or a new group at the back, or take them out
+// of the line. The server does all of them or none (movePlayers and
+// removePlayers in lib/queue.js), so two people rearranging at once never
+// leave half a change. The line keeps updating while people are
 // picked; anyone who moves or leaves meanwhile just drops out of the picks.
 import { h, waiting, GROUP_SIZE } from './core.js';
-import { pickDialog } from './dialogs.js';
+import { openDialog, pickDialog } from './dialogs.js';
 
 const MAX_PICKS = GROUP_SIZE;
-const EDIT_HINT = 'Tap up to 4 people, then Move to… They move together. Tap Done when finished.';
+const EDIT_HINT = 'Tap up to 4 people, then Move to… or Remove from line. Tap Done when finished.';
 
 const samePick = (a, b) => a.playerKey === b.playerKey && a.fromGroupId === b.fromGroupId;
 const listNames = (picks) => picks.map((p) => p.name).join(', ');
@@ -87,6 +88,28 @@ export function createLineEditor({ els, getState, send, refresh, rerender }) {
     rerender();
   }
 
+  async function remove() {
+    if (!picks.length) return;
+    const removing = picks;
+    const choice = await openDialog({
+      title: `Remove ${listNames(removing)} from the line?`,
+      body: ['They stay checked in and can sign up again.'],
+      actions: [{ label: 'Cancel', value: '', kind: 'secondary' }, { label: 'Remove', value: 'remove', kind: 'danger' }],
+    });
+    if (choice !== 'remove') return;
+    const done = await send({
+      type: 'removePlayers',
+      picks: removing.map(({ playerKey, fromGroupId }) => ({ playerKey, fromGroupId })),
+    }, (message) => { note = message; });
+    if (done) {
+      picks = [];
+      note = `Removed ${listNames(removing)} from the line.`;
+    } else {
+      refresh();
+    }
+    rerender();
+  }
+
   function setEditing(on) {
     editing = on;
     picks = [];
@@ -104,12 +127,14 @@ export function createLineEditor({ els, getState, send, refresh, rerender }) {
       ? picks.map((p) => h('span', { class: 'chip', text: p.name }))
       : [h('span', { class: 'muted', text: 'Nobody picked yet' })]));
     els.move.disabled = picks.length === 0;
+    els.remove.disabled = picks.length === 0;
     els.move.textContent = picks.length ? `Move ${picks.length} to…` : 'Move to…';
     els.note.textContent = note;
   }
 
   els.button.addEventListener('click', () => setEditing(!editing));
   els.move.addEventListener('click', move);
+  els.remove.addEventListener('click', remove);
   els.clear.addEventListener('click', () => { picks = []; note = ''; rerender(); });
 
   return {

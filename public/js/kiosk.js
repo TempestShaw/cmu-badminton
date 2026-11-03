@@ -103,7 +103,7 @@ const walkupBoxes = nameBoxes($('walkup-names'));
 const editor = createLineEditor({
   els: {
     button: $('line-edit'), hint: $('line-hint'), bar: $('edit-bar'), picked: $('edit-picked'),
-    move: $('edit-move'), clear: $('edit-clear'), note: $('edit-note'),
+    move: $('edit-move'), remove: $('edit-remove'), clear: $('edit-clear'), note: $('edit-note'),
   },
   getState: () => live.state,
   send: act,

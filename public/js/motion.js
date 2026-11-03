@@ -27,6 +27,11 @@ export function markDropped(kind, id) {
 
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// ?fps in the address shows a frame-rate readout (fps-meter.js), loaded only then.
+if (new URLSearchParams(location.search).has('fps')) {
+  import('./fps-meter.js').then((m) => m.startFpsMeter()).catch(() => {});
+}
+
 // key -> {el, rect, parentKey}; anything sharing a key with another element is left out.
 function measure(container) {
   const found = new Map();
@@ -35,8 +40,9 @@ function measure(container) {
     for (const el of container.querySelectorAll(selector)) {
       const k = key(el);
       if (found.has(k)) twice.add(k);
-      const parent = el.parentElement?.closest('.qgroup[data-group-id]');
-      found.set(k, { el, rect: el.getBoundingClientRect(), parentKey: parent ? `group:${parent.dataset.groupId}` : null });
+      // A name in the line carries its group's id, so no walking up the tree.
+      const parentKey = el.classList.contains('slot') && el.dataset.groupId ? `group:${el.dataset.groupId}` : null;
+      found.set(k, { el, rect: el.getBoundingClientRect(), parentKey });
     }
   }
   for (const k of twice) found.delete(k);
@@ -54,19 +60,30 @@ function fadeOutGhost({ el, rect }) {
     .finished.finally(() => ghost.remove());
 }
 
+// Pages redraw every section on any change (a check-in, someone's bubble
+// colour…). When a section would come out exactly the same, keep what's on
+// screen: no swap, no layout, no measuring.
+function unchanged(container, nodes) {
+  const shown = container.childNodes;
+  return shown.length === nodes.length && nodes.every((node, i) => node.isEqualNode(shown[i]));
+}
+
+const onScreen = (rect) => rect.bottom > 0 && rect.top < innerHeight;
+
 /**
- * Runs `redraw` (which replaces the container's children) and animates the
- * difference. Safe to use everywhere: without a visible container or with
- * reduced motion it just redraws.
+ * Puts `nodes` in the container and animates the difference. Safe to use
+ * everywhere: without a visible container or with reduced motion it just swaps.
+ * @returns {boolean} whether anything changed
  */
-export function animateRedraw(container, redraw) {
+export function animateRedraw(container, nodes) {
+  if (unchanged(container, nodes)) return false;
   if (reduceMotion() || document.visibilityState !== 'visible' || !container.getClientRects().length) {
-    redraw();
-    return;
+    container.replaceChildren(...nodes);
+    return true;
   }
   const before = measure(container);
-  redraw();
-  if (!before.size) return; // first draw: nothing to compare with
+  container.replaceChildren(...nodes);
+  if (!before.size) return true; // first draw: nothing to compare with
   const after = measure(container);
   const now = Date.now();
 
@@ -76,8 +93,10 @@ export function animateRedraw(container, redraw) {
     const was = before.get(k);
     if (was) shift.set(k, { x: was.rect.left - item.rect.left, y: was.rect.top - item.rect.top });
   }
-  for (const [k, { el, parentKey }] of after) {
+  for (const [k, { el, rect, parentKey }] of after) {
     const moved = shift.get(k);
+    // Off screen before and after: nobody would see it move.
+    if (!onScreen(rect) && !(before.get(k) && onScreen(before.get(k).rect))) continue;
     if (!moved) {
       if (parentKey && !before.has(parentKey)) continue; // a new group fades in as a whole
       el.animate([{ opacity: 0, transform: 'scale(0.96)' }, { opacity: 1, transform: 'none' }], { duration: FADE_IN_MS, easing: EASE });
@@ -93,15 +112,17 @@ export function animateRedraw(container, redraw) {
   // Gone: fade out where they stood (a whole group fades as one, not name by name).
   for (const [k, was] of before) {
     const groupGoneToo = was.parentKey && before.has(was.parentKey) && !after.has(was.parentKey);
-    if (!after.has(k) && !groupGoneToo) fadeOutGhost(was);
+    if (!after.has(k) && !groupGoneToo && onScreen(was.rect)) fadeOutGhost(was);
   }
+  return true;
 }
 
 /** Courts don't move; one that changed (called, freed) fades in once so the eye catches it. */
-export function animateCourts(container, redraw) {
+export function animateCourts(container, nodes) {
+  if (unchanged(container, nodes)) return;
   const groupOf = () => new Map([...container.querySelectorAll('.court[data-court]')].map((el) => [el.dataset.court, el.dataset.groupId]));
   const before = groupOf();
-  redraw();
+  container.replaceChildren(...nodes);
   if (!before.size || reduceMotion() || document.visibilityState !== 'visible') return;
   for (const el of container.querySelectorAll('.court[data-court]')) {
     if (before.has(el.dataset.court) && before.get(el.dataset.court) !== el.dataset.groupId) {
